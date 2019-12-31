@@ -1,33 +1,34 @@
 <?php
+
 /**
- * @see       https://github.com/zendframework/zend-expressive-zendrouter for the canonical source repository
- * @copyright Copyright (c) 2015-2017 Zend Technologies USA Inc. (https://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-zendrouter/blob/master/LICENSE.md New BSD License
+ * @see       https://github.com/mezzio/mezzio-laminasrouter for the canonical source repository
+ * @copyright https://github.com/mezzio/mezzio-laminasrouter/blob/master/COPYRIGHT.md
+ * @license   https://github.com/mezzio/mezzio-laminasrouter/blob/master/LICENSE.md New BSD License
  */
 
 declare(strict_types=1);
 
-namespace Zend\Expressive\Router;
+namespace Mezzio\Router;
 
 use Fig\Http\Message\RequestMethodInterface as RequestMethod;
+use Laminas\Psr7Bridge\Psr7ServerRequest;
+use Laminas\Router\Http\TreeRouteStack;
+use Laminas\Router\RouteMatch;
+use Mezzio\Router\Exception;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
-use Zend\Expressive\Router\Exception;
-use Zend\Psr7Bridge\Psr7ServerRequest;
-use Zend\Router\Http\TreeRouteStack;
-use Zend\Router\RouteMatch;
 
 /**
- * Router implementation that consumes zend-mvc TreeRouteStack.
+ * Router implementation that consumes laminas-mvc TreeRouteStack.
  *
- * This router implementation consumes the TreeRouteStack from zend-mvc (the
- * default router implementation in a ZF2 application). The addRoute() method
+ * This router implementation consumes the TreeRouteStack from laminas-mvc (the
+ * default router implementation in a Laminas application). The addRoute() method
  * injects segment routes into the TreeRouteStack. To manage 405 (Method Not
  * Allowed) errors, we inject a METHOD_NOT_ALLOWED_ROUTE route as a child
  * route, at a priority lower than method-specific routes. If the request
  * matches with this special route, we can send the HTTP allowed methods stored
  * for that path.
  */
-class ZendRouter implements RouterInterface
+class LaminasRouter implements RouterInterface
 {
     /**
      * Implicitly supported HTTP methods on any route.
@@ -47,7 +48,7 @@ class ZendRouter implements RouterInterface
     private $allowedMethodsByPath = [];
 
     /**
-     * Map a named route to a ZF2 route name to use for URI generation.
+     * Map a named route to a Laminas route name to use for URI generation.
      *
      * @var array
      */
@@ -68,7 +69,7 @@ class ZendRouter implements RouterInterface
     /**
      * @var TreeRouteStack
      */
-    private $zendRouter;
+    private $laminasRouter;
 
     /**
      * Constructor.
@@ -81,7 +82,7 @@ class ZendRouter implements RouterInterface
             $router = $this->createRouter();
         }
 
-        $this->zendRouter = $router;
+        $this->laminasRouter = $router;
     }
 
     public function addRoute(Route $route) : void
@@ -94,8 +95,8 @@ class ZendRouter implements RouterInterface
         // Must inject routes prior to matching.
         $this->injectRoutes();
 
-        $zendRequest = Psr7ServerRequest::toZend($request, true);
-        $match = $this->zendRouter->match($zendRequest);
+        $laminasRequest = Psr7ServerRequest::toLaminas($request, true);
+        $match = $this->laminasRouter->match($laminasRequest);
 
         if (null === $match) {
             // No route matched at all; to indicate that it's not due to the
@@ -111,7 +112,7 @@ class ZendRouter implements RouterInterface
         // Must inject routes prior to generating URIs.
         $this->injectRoutes();
 
-        if (! $this->zendRouter->hasRoute($name)) {
+        if (! $this->laminasRouter->hasRoute($name)) {
             throw new Exception\RuntimeException(sprintf(
                 'Cannot generate URI based on route "%s"; route not found',
                 $name
@@ -125,7 +126,7 @@ class ZendRouter implements RouterInterface
             'only_return_path' => true,
         ]);
 
-        return $this->zendRouter->assemble($substitutions, $options);
+        return $this->laminasRouter->assemble($substitutions, $options);
     }
 
     private function createRouter() : TreeRouteStack
@@ -164,7 +165,7 @@ class ZendRouter implements RouterInterface
         }, false);
 
         if (! $route) {
-            // This should never happen, as Zend\Expressive\Router\Route always
+            // This should never happen, as Mezzio\Router\Route always
             // ensures a non-empty route name. Marking as failed route to be
             // consistent with other implementations.
             return RouteResult::fromRouteFailure(Route::HTTP_METHOD_ANY);
@@ -260,7 +261,7 @@ class ZendRouter implements RouterInterface
 
         $allowedMethods = $route->getAllowedMethods();
         if (Route::HTTP_METHOD_ANY === $allowedMethods) {
-            $this->zendRouter->addRoute($name, [
+            $this->laminasRouter->addRoute($name, [
                 'type'    => 'segment',
                 'options' => $options,
             ]);
@@ -294,7 +295,7 @@ class ZendRouter implements RouterInterface
             unset($spec['child_routes'][self::METHOD_NOT_ALLOWED_ROUTE]);
         }
 
-        $this->zendRouter->addRoute($name, $spec);
+        $this->laminasRouter->addRoute($name, $spec);
         $this->allowedMethodsByPath[$path] = $allowedMethods;
         $this->routeNameMap[$name] = sprintf('%s/%s', $name, $httpMethodRouteName);
     }
