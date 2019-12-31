@@ -1,18 +1,19 @@
 <?php
+
 /**
- * @see       https://github.com/zendframework/zend-expressive-zendrouter for the canonical source repository
- * @copyright Copyright (c) 2018 Zend Technologies USA Inc. (https://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-zendrouter/blob/master/LICENSE.md New BSD License
+ * @see       https://github.com/mezzio/mezzio-laminasrouter for the canonical source repository
+ * @copyright https://github.com/mezzio/mezzio-laminasrouter/blob/master/COPYRIGHT.md
+ * @license   https://github.com/mezzio/mezzio-laminasrouter/blob/master/LICENSE.md New BSD License
  */
 
 declare(strict_types=1);
 
-namespace ZendTest\Expressive\Router\ZendRouter;
+namespace MezzioTest\Router\LaminasRouter;
 
+use Mezzio\Router\LaminasRouter;
+use Mezzio\Router\LaminasRouter\ConfigProvider;
+use Mezzio\Router\RouterInterface;
 use PHPUnit\Framework\TestCase;
-use Zend\Expressive\Router\RouterInterface;
-use Zend\Expressive\Router\ZendRouter;
-use Zend\Expressive\Router\ZendRouter\ConfigProvider;
 
 class ConfigProviderTest extends TestCase
 {
@@ -48,6 +49,6 @@ class ConfigProviderTest extends TestCase
 
         $this->assertArrayHasKey('invokables', $config['dependencies']);
         $this->assertInternalType('array', $config['dependencies']['invokables']);
-        $this->assertArrayHasKey(ZendRouter::class, $config['dependencies']['invokables']);
+        $this->assertArrayHasKey(LaminasRouter::class, $config['dependencies']['invokables']);
     }
 }
