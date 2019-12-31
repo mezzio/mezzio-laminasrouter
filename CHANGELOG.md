@@ -10,8 +10,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Changed
 
-- [#37](https://github.com/zendframework/zend-expressive-zendrouter/pull/37)
-  updates the package to pin to zend-expressive-router 3.0.0rc1 or later.
+- [zendframework/zend-expressive-zendrouter#37](https://github.com/zendframework/zend-expressive-zendrouter/pull/37)
+  updates the package to pin to mezzio-router 3.0.0rc1 or later.
 
 ### Deprecated
 
@@ -23,7 +23,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#37](https://github.com/zendframework/zend-expressive-zendrouter/pull/37)
+- [zendframework/zend-expressive-zendrouter#37](https://github.com/zendframework/zend-expressive-zendrouter/pull/37)
   fixes an issue with how a failure result is marshaled when the path patches
   but the request method does not. The package now correctly aggregates allowed
   methods for the route result failure instance.
@@ -48,19 +48,19 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#36](https://github.com/zendframework/zend-expressive-zendrouter/pull/36)
+- [zendframework/zend-expressive-zendrouter#36](https://github.com/zendframework/zend-expressive-zendrouter/pull/36)
   fixes the composer config provider entry.
 
 ## 3.0.0alpha1 - 2018-02-06
 
 ### Added
 
-- [#30](https://github.com/zendframework/zend-expressive-zendrouter/pull/30) and
-  [#35](https://github.com/zendframework/zend-expressive-zendrouter/pull/35) add
-  support for the zend-expressive-router 3.0 series.
+- [zendframework/zend-expressive-zendrouter#30](https://github.com/zendframework/zend-expressive-zendrouter/pull/30) and
+  [zendframework/zend-expressive-zendrouter#35](https://github.com/zendframework/zend-expressive-zendrouter/pull/35) add
+  support for the mezzio-router 3.0 series.
 
-- [#34](https://github.com/zendframework/zend-expressive-zendrouter/pull/34)
-  adds `Zend\Expressive\Router\ZendRouter\ConfigProvider` and exposes it as a
+- [zendframework/zend-expressive-zendrouter#34](https://github.com/zendframework/zend-expressive-zendrouter/pull/34)
+  adds `Mezzio\Router\LaminasRouter\ConfigProvider` and exposes it as a
   config provider within the package definition.
 
 ### Changed
@@ -73,10 +73,10 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Removed
 
-- [#30](https://github.com/zendframework/zend-expressive-zendrouter/pull/30)
-  removes support for the zend-expressive-router 2.0 series.
+- [zendframework/zend-expressive-zendrouter#30](https://github.com/zendframework/zend-expressive-zendrouter/pull/30)
+  removes support for the mezzio-router 2.0 series.
 
-- [#30](https://github.com/zendframework/zend-expressive-zendrouter/pull/30)
+- [zendframework/zend-expressive-zendrouter#30](https://github.com/zendframework/zend-expressive-zendrouter/pull/30)
   removes support for PHP 5.6 and PHP 7.0.
 
 ### Fixed
@@ -131,11 +131,11 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Added
 
-- [#26](https://github.com/zendframework/zend-expressive-zendrouter/pull/26)
+- [zendframework/zend-expressive-zendrouter#26](https://github.com/zendframework/zend-expressive-zendrouter/pull/26)
   adds support for PHP 7.2.
 
-- [#27](https://github.com/zendframework/zend-expressive-zendrouter/pull/27)
-  adds support for the zend-psr7bridge 1.0 series of releases.
+- [zendframework/zend-expressive-zendrouter#27](https://github.com/zendframework/zend-expressive-zendrouter/pull/27)
+  adds support for the laminas-psr7bridge 1.0 series of releases.
 
 ### Deprecated
 
@@ -143,7 +143,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Removed
 
-- [#26](https://github.com/zendframework/zend-expressive-zendrouter/pull/26)
+- [zendframework/zend-expressive-zendrouter#26](https://github.com/zendframework/zend-expressive-zendrouter/pull/26)
   removes support for HHVM.
 
 ### Fixed
@@ -166,17 +166,17 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#20](https://github.com/zendframework/zend-expressive-zendrouter/pull/20)
-  fixes an import statement in `ZendRouter` to ensure the correct exception
+- [zendframework/zend-expressive-zendrouter#20](https://github.com/zendframework/zend-expressive-zendrouter/pull/20)
+  fixes an import statement in `LaminasRouter` to ensure the correct exception
   namespace is used.
 
 ## 2.0.0 - 2017-01-11
 
 ### Added
 
-- [#16](https://github.com/zendframework/zend-expressive-zendrouter/pull/16)
-  adds support for zend-expressive-router 2.0. This includes a breaking change
-  to those _extending_ `Zend\Expressive\Router\ZendRouter`, as the
+- [zendframework/zend-expressive-zendrouter#16](https://github.com/zendframework/zend-expressive-zendrouter/pull/16)
+  adds support for mezzio-router 2.0. This includes a breaking change
+  to those _extending_ `Mezzio\Router\LaminasRouter`, as the
   `generateUri()` method now expects a third, optional argument,
   `array $options = []`.
 
@@ -204,16 +204,16 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Changed
 
-- [#12](https://github.com/zendframework/zend-expressive-zendrouter/pull/12)
-  updates the zend-expressive-router dependency to 1.3.2+
+- [zendframework/zend-expressive-zendrouter#12](https://github.com/zendframework/zend-expressive-zendrouter/pull/12)
+  updates the mezzio-router dependency to 1.3.2+
 
-- [#12](https://github.com/zendframework/zend-expressive-zendrouter/pull/12)
-  updates the router to compose the `Zend\Expressive\Router\Route` instance
+- [zendframework/zend-expressive-zendrouter#12](https://github.com/zendframework/zend-expressive-zendrouter/pull/12)
+  updates the router to compose the `Mezzio\Router\Route` instance
   associated with a successful route match in the returned `RouteResult`. This
   allows you to access other route metadata like the path, allowed HTTP methods,
   and route options.
 
-- [#12](https://github.com/zendframework/zend-expressive-zendrouter/pull/12)
+- [zendframework/zend-expressive-zendrouter#12](https://github.com/zendframework/zend-expressive-zendrouter/pull/12)
   updates the router to always support `HEAD` and `OPTIONS` requests made to any
   valid route. Dispatchers will need to check if such requests are supported
   explicitly or implicitly by the matched route (using `Route::implicitHead()`
@@ -247,8 +247,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#7](https://github.com/zendframework/zend-expressive-zendrouter/pull/7)
-  updates the zend-router dependency to `^3.0`; this also required changing
+- [zendframework/zend-expressive-zendrouter#7](https://github.com/zendframework/zend-expressive-zendrouter/pull/7)
+  updates the laminas-router dependency to `^3.0`; this also required changing
   which routes and routers are imported internally to use the new namespace
   introduced in that version. The changes should have no effect on existing
   code, except that they will result in dependency updates.
@@ -269,8 +269,8 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#6](https://github.com/zendframework/zend-expressive-zendrouter/pull/6)
-  updates the component to depend on zend-router instead of zend-mvc.
+- [zendframework/zend-expressive-zendrouter#6](https://github.com/zendframework/zend-expressive-zendrouter/pull/6)
+  updates the component to depend on laminas-router instead of laminas-mvc.
 
 ## 1.0.1 - 2016-01-04
 
@@ -288,7 +288,7 @@ All notable changes to this project will be documented in this file, in reverse 
 
 ### Fixed
 
-- [#3](https://github.com/zendframework/zend-expressive-zendrouter/pull/3) fixes
+- [zendframework/zend-expressive-zendrouter#3](https://github.com/zendframework/zend-expressive-zendrouter/pull/3) fixes
   an issue whereby appending a trailing slash to a route that did not define one
   was resulting in a 405 instead of a 404 error.
 
@@ -328,8 +328,8 @@ First stable release.
 
 ### Fixed
 
-- Updated to use [zendframework/zend-expressive-router](https://github.com/zendframework/zend-expressive-router)
-  instead of zendframework/zend-expressive.
+- Updated to use [mezzio/mezzio-router](https://github.com/mezzio/mezzio-router)
+  instead of mezzio/mezzio.
 
 ## 0.2.0 - 2015-10-20
 
@@ -347,7 +347,7 @@ First stable release.
 
 ### Fixed
 
-- Updated to zend-expressive RC1.
+- Updated to mezzio RC1.
 - Added branch alias for dev-master, pointing to 1.0-dev.
 
 ## 0.1.0 - 2015-10-10
