@@ -1,40 +1,41 @@
 <?php
+
 /**
- * @see       https://github.com/zendframework/zend-expressive-zendrouter for the canonical source repository
- * @copyright Copyright (c) 2015-2017 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   https://github.com/zendframework/zend-expressive-zendrouter/blob/master/LICENSE.md New BSD License
+ * @see       https://github.com/mezzio/mezzio-laminasrouter for the canonical source repository
+ * @copyright https://github.com/mezzio/mezzio-laminasrouter/blob/master/COPYRIGHT.md
+ * @license   https://github.com/mezzio/mezzio-laminasrouter/blob/master/LICENSE.md New BSD License
  */
 
-namespace ZendTest\Expressive\Router;
+namespace MezzioTest\Router;
 
 use Fig\Http\Message\RequestMethodInterface as RequestMethod;
+use Laminas\Diactoros\ServerRequest;
+use Laminas\Http\Request as LaminasRequest;
+use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\Router\Http\TreeRouteStack;
+use Laminas\Router\RouteMatch;
+use Mezzio\Router\LaminasRouter;
+use Mezzio\Router\Route;
+use Mezzio\Router\RouteResult;
 use PHPUnit_Framework_TestCase as TestCase;
 use Prophecy\Argument;
-use Zend\Diactoros\ServerRequest;
-use Zend\Expressive\Router\Route;
-use Zend\Expressive\Router\RouteResult;
-use Zend\Expressive\Router\ZendRouter;
-use Zend\Http\Request as ZendRequest;
-use Zend\I18n\Translator\TranslatorInterface;
-use Zend\Router\Http\TreeRouteStack;
-use Zend\Router\RouteMatch;
 
-class ZendRouterTest extends TestCase
+class LaminasRouterTest extends TestCase
 {
     public function setUp()
     {
-        $this->zendRouter = $this->prophesize(TreeRouteStack::class);
+        $this->laminasRouter = $this->prophesize(TreeRouteStack::class);
     }
 
     public function getRouter()
     {
-        return new ZendRouter($this->zendRouter->reveal());
+        return new LaminasRouter($this->laminasRouter->reveal());
     }
 
-    public function testWillLazyInstantiateAZendTreeRouteStackIfNoneIsProvidedToConstructor()
+    public function testWillLazyInstantiateALaminasTreeRouteStackIfNoneIsProvidedToConstructor()
     {
-        $router = new ZendRouter();
-        $this->assertAttributeInstanceOf(TreeRouteStack::class, 'zendRouter', $router);
+        $router = new LaminasRouter();
+        $this->assertAttributeInstanceOf(TreeRouteStack::class, 'laminasRouter', $router);
     }
 
     public function createRequestProphecy($requestMethod = RequestMethod::METHOD_GET)
@@ -70,7 +71,7 @@ class ZendRouterTest extends TestCase
     {
         $route = new Route('/foo', 'foo', ['GET']);
 
-        $this->zendRouter->addRoute('/foo^GET', [
+        $this->laminasRouter->addRoute('/foo^GET', [
             'type' => 'segment',
             'options' => [
                 'route' => '/foo',
@@ -86,13 +87,13 @@ class ZendRouterTest extends TestCase
                         ],
                     ],
                 ],
-                ZendRouter::METHOD_NOT_ALLOWED_ROUTE => [
+                LaminasRouter::METHOD_NOT_ALLOWED_ROUTE => [
                     'type'     => 'regex',
                     'priority' => -1,
                     'options'  => [
                         'regex' => '',
                         'defaults' => [
-                            ZendRouter::METHOD_NOT_ALLOWED_ROUTE => '/foo',
+                            LaminasRouter::METHOD_NOT_ALLOWED_ROUTE => '/foo',
                         ],
                         'spec' => '',
                     ],
@@ -104,7 +105,7 @@ class ZendRouterTest extends TestCase
         $router->addRoute($route);
 
         $request = $this->createRequestProphecy();
-        $this->zendRouter->match(Argument::type(ZendRequest::class))->willReturn(null);
+        $this->laminasRouter->match(Argument::type(LaminasRequest::class))->willReturn(null);
 
         $router->match($request->reveal());
     }
@@ -116,7 +117,7 @@ class ZendRouterTest extends TestCase
     {
         $route = new Route('/foo', 'foo', ['GET']);
 
-        $this->zendRouter->addRoute('/foo^GET', [
+        $this->laminasRouter->addRoute('/foo^GET', [
             'type' => 'segment',
             'options' => [
                 'route' => '/foo',
@@ -132,21 +133,21 @@ class ZendRouterTest extends TestCase
                         ],
                     ],
                 ],
-                ZendRouter::METHOD_NOT_ALLOWED_ROUTE => [
+                LaminasRouter::METHOD_NOT_ALLOWED_ROUTE => [
                     'type'     => 'regex',
                     'priority' => -1,
                     'options'  => [
                         'regex' => '',
                         'defaults' => [
-                            ZendRouter::METHOD_NOT_ALLOWED_ROUTE => '/foo',
+                            LaminasRouter::METHOD_NOT_ALLOWED_ROUTE => '/foo',
                         ],
                         'spec' => '',
                     ],
                 ],
             ],
         ])->shouldBeCalled();
-        $this->zendRouter->hasRoute('foo')->willReturn(true);
-        $this->zendRouter->assemble(
+        $this->laminasRouter->hasRoute('foo')->willReturn(true);
+        $this->laminasRouter->assemble(
             [],
             [
                 'name' => 'foo',
@@ -172,7 +173,7 @@ class ZendRouterTest extends TestCase
             ],
         ]);
 
-        $this->zendRouter->addRoute('/foo/:id^GET', [
+        $this->laminasRouter->addRoute('/foo/:id^GET', [
             'type' => 'segment',
             'options' => [
                 'route' => '/foo/:id',
@@ -194,13 +195,13 @@ class ZendRouterTest extends TestCase
                         ],
                     ],
                 ],
-                ZendRouter::METHOD_NOT_ALLOWED_ROUTE => [
+                LaminasRouter::METHOD_NOT_ALLOWED_ROUTE => [
                     'type'     => 'regex',
                     'priority' => -1,
                     'options'  => [
                         'regex' => '',
                         'defaults' => [
-                            ZendRouter::METHOD_NOT_ALLOWED_ROUTE => '/foo/:id',
+                            LaminasRouter::METHOD_NOT_ALLOWED_ROUTE => '/foo/:id',
                         ],
                         'spec' => '',
                     ],
@@ -208,8 +209,8 @@ class ZendRouterTest extends TestCase
             ],
         ])->shouldBeCalled();
 
-        $this->zendRouter->hasRoute('foo')->willReturn(true);
-        $this->zendRouter->assemble(
+        $this->laminasRouter->hasRoute('foo')->willReturn(true);
+        $this->laminasRouter->assemble(
             [],
             [
                 'name' => 'foo',
@@ -244,12 +245,12 @@ class ZendRouterTest extends TestCase
         };
 
         $route = new Route('/foo', $middleware, ['GET']);
-        $zendRouter = new ZendRouter();
-        $zendRouter->addRoute($route);
+        $laminasRouter = new LaminasRouter();
+        $laminasRouter->addRoute($route);
 
         $request = new ServerRequest([ 'REQUEST_METHOD' => 'GET' ], [], '/foo', 'GET');
 
-        $result = $zendRouter->match($request);
+        $result = $laminasRouter->match($request);
         $this->assertInstanceOf(RouteResult::class, $result);
         $this->assertEquals('/foo^GET', $result->getMatchedRouteName());
         $this->assertEquals($middleware, $result->getMatchedMiddleware());
@@ -266,10 +267,10 @@ class ZendRouterTest extends TestCase
             'middleware' => 'bar',
         ]);
 
-        $this->zendRouter
-            ->match(Argument::type(ZendRequest::class))
+        $this->laminasRouter
+            ->match(Argument::type(LaminasRequest::class))
             ->willReturn($routeMatch->reveal());
-        $this->zendRouter
+        $this->laminasRouter
             ->addRoute('/foo', Argument::type('array'))
             ->shouldBeCalled();
 
@@ -289,8 +290,8 @@ class ZendRouterTest extends TestCase
      */
     public function testNonSuccessfulMatchNotDueToHttpMethodsIsPossible()
     {
-        $this->zendRouter
-            ->match(Argument::type(ZendRequest::class))
+        $this->laminasRouter
+            ->match(Argument::type(LaminasRequest::class))
             ->willReturn(null);
 
         $request = $this->createRequestProphecy();
@@ -307,7 +308,7 @@ class ZendRouterTest extends TestCase
      */
     public function testMatchFailureDueToHttpMethodReturnsRouteResultWithAllowedMethods()
     {
-        $router = new ZendRouter();
+        $router = new LaminasRouter();
         $router->addRoute(new Route('/foo', 'bar', ['POST', 'DELETE']));
         $request = new ServerRequest([ 'REQUEST_METHOD' => 'GET' ], [], '/foo', 'GET');
         $result = $router->match($request);
@@ -323,7 +324,7 @@ class ZendRouterTest extends TestCase
      */
     public function testMatchFailureDueToMethodNotAllowedWithParamsInTheRoute()
     {
-        $router = new ZendRouter();
+        $router = new LaminasRouter();
         $router->addRoute(new Route('/foo[/:id]', 'foo', ['POST', 'DELETE']));
         $request = new ServerRequest([ 'REQUEST_METHOD' => 'GET' ], [], '/foo/1', 'GET');
         $result = $router->match($request);
@@ -339,7 +340,7 @@ class ZendRouterTest extends TestCase
      */
     public function testCanGenerateUriFromRoutes()
     {
-        $router = new ZendRouter();
+        $router = new LaminasRouter();
         $route1 = new Route('/foo', 'foo', ['POST'], 'foo-create');
         $route2 = new Route('/foo', 'foo', ['GET'], 'foo-list');
         $route3 = new Route('/foo/:id', 'foo', ['GET'], 'foo');
@@ -361,7 +362,7 @@ class ZendRouterTest extends TestCase
      */
     public function testPassingTrailingSlashToRouteNotExpectingItResultsIn404FailureRouteResult()
     {
-        $router = new ZendRouter();
+        $router = new LaminasRouter();
         $route  = new Route('/api/ping', 'ping', ['GET'], 'ping');
 
         $router->addRoute($route);
@@ -381,10 +382,10 @@ class ZendRouterTest extends TestCase
             'middleware' => $route->getMiddleware(),
         ]);
 
-        $this->zendRouter
-            ->match(Argument::type(ZendRequest::class))
+        $this->laminasRouter
+            ->match(Argument::type(LaminasRequest::class))
             ->willReturn($routeMatch->reveal());
-        $this->zendRouter
+        $this->laminasRouter
             ->addRoute('/foo^GET', Argument::type('array'))
             ->shouldBeCalled();
 
@@ -415,7 +416,7 @@ class ZendRouterTest extends TestCase
     {
         $route = new Route('/foo', 'bar', [RequestMethod::METHOD_PUT]);
 
-        $router = new ZendRouter();
+        $router = new LaminasRouter();
         $router->addRoute($route);
 
         $request = $this->createRequestProphecy($method);
@@ -430,7 +431,7 @@ class ZendRouterTest extends TestCase
     {
         $route = new Route('/de/{lang}', 'bar', [RequestMethod::METHOD_PUT], 'test');
 
-        $router = new ZendRouter();
+        $router = new LaminasRouter();
         $router->addRoute($route);
 
         $translator = $this->prophesize(TranslatorInterface::class);

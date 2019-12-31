@@ -1,18 +1,18 @@
-# zend-mvc Router Integration for Expressive
+# laminas-mvc Router Integration for Mezzio
 
-[![Build Status](https://secure.travis-ci.org/zendframework/zend-expressive-zendrouter.svg?branch=master)](https://secure.travis-ci.org/zendframework/zend-expressive-zendrouter)
+[![Build Status](https://travis-ci.org/mezzio/mezzio-laminasrouter.svg?branch=master)](https://travis-ci.org/mezzio/mezzio-laminasrouter)
 
-Provides [ZF2's MVC router](https://github.com/zendframework/zend-mvc)
-integration for [zend-expressive](https://github.com/zendframework/zend-expressive).
+Provides [Laminas's MVC router](https://github.com/laminas/laminas-mvc)
+integration for [mezzio](https://github.com/mezzio/mezzio).
 
 ## Installation
 
 Install this library using composer:
 
 ```bash
-$ composer require zendframework/zend-expressive-zendrouter
+$ composer require mezzio/mezzio-laminasrouter
 ```
 
 ## Documentation
 
-See the Expressive [ZF2 Router documentation](https://zendframework.github.io/zend-expressive/features/router/zf2/).
+See the Mezzio [Laminas Router documentation](https://docs.mezzio.dev/mezzio/features/router/laminas/).
