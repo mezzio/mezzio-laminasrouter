@@ -16,4 +16,4 @@ $ composer require mezzio/mezzio-laminasrouter
 
 ## Documentation
 
-See the Mezzio [Laminas Router documentation](https://docs.mezzio.dev/mezzio/features/router/laminas/).
+See the Mezzio [Laminas Router documentation](https://docs.mezzio.dev/mezzio/features/router/laminas-router/).
