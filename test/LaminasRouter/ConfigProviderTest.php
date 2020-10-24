@@ -30,7 +30,7 @@ class ConfigProviderTest extends TestCase
     public function testInvocationReturnsArray() : array
     {
         $config = ($this->provider)();
-        $this->assertInternalType('array', $config);
+        $this->assertIsArray($config);
 
         return $config;
     }
@@ -41,14 +41,14 @@ class ConfigProviderTest extends TestCase
     public function testReturnedArrayContainsDependencies(array $config) : void
     {
         $this->assertArrayHasKey('dependencies', $config);
-        $this->assertInternalType('array', $config['dependencies']);
+        $this->assertIsArray($config['dependencies']);
 
         $this->assertArrayHasKey('aliases', $config['dependencies']);
-        $this->assertInternalType('array', $config['dependencies']['aliases']);
+        $this->assertIsArray($config['dependencies']['aliases']);
         $this->assertArrayHasKey(RouterInterface::class, $config['dependencies']['aliases']);
 
         $this->assertArrayHasKey('invokables', $config['dependencies']);
-        $this->assertInternalType('array', $config['dependencies']['invokables']);
+        $this->assertIsArray($config['dependencies']['invokables']);
         $this->assertArrayHasKey(LaminasRouter::class, $config['dependencies']['invokables']);
     }
 }

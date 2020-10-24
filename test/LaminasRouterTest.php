@@ -33,7 +33,7 @@ class LaminasRouterTest extends TestCase
     /** @var TreeRouteStack|ObjectProphecy */
     private $laminasRouter;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->laminasRouter = $this->prophesize(TreeRouteStack::class);
     }
@@ -51,7 +51,10 @@ class LaminasRouterTest extends TestCase
     public function testWillLazyInstantiateALaminasTreeRouteStackIfNoneIsProvidedToConstructor()
     {
         $router = new LaminasRouter();
-        $this->assertAttributeInstanceOf(TreeRouteStack::class, 'laminasRouter', $router);
+        $laminasRouter = \Closure::bind(function () {
+            return $this->laminasRouter;
+        }, $router, LaminasRouter::class)();
+        $this->assertInstanceOf(TreeRouteStack::class, $laminasRouter);
     }
 
     public function createRequestProphecy($requestMethod = RequestMethod::METHOD_GET)
@@ -77,7 +80,11 @@ class LaminasRouterTest extends TestCase
         $route = new Route('/foo', $this->getMiddleware(), [RequestMethod::METHOD_GET]);
         $router = $this->getRouter();
         $router->addRoute($route);
-        $this->assertAttributeContains($route, 'routesToInject', $router);
+
+        $routesToInject = \Closure::bind(function () {
+            return $this->routesToInject;
+        }, $router, LaminasRouter::class)();
+        $this->assertContains($route, $routesToInject);
     }
 
     /**
