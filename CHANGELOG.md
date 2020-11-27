@@ -2,27 +2,28 @@
 
 All notable changes to this project will be documented in this file, in reverse chronological order by release.
 
-## 3.1.0 - TBD
+## 3.1.0 - 2020-11-27
 
 ### Added
 
 - [#4](https://github.com/mezzio/mezzio-laminasrouter/pull/4) Add PHP 8.0 support
 
-### Changed
 
-- Nothing.
+-----
 
-### Deprecated
+### Release Notes for [3.1.0](https://github.com/mezzio/mezzio-laminasrouter/milestone/1)
 
-- Nothing.
 
-### Removed
 
-- Nothing.
+### 3.1.0
 
-### Fixed
+- Total issues resolved: **1**
+- Total pull requests resolved: **1**
+- Total contributors: **2**
 
-- Nothing.
+#### Enhancement,hacktoberfest-accepted
+
+ - [4: Bump dependencies to PHP8](https://github.com/mezzio/mezzio-laminasrouter/pull/4) thanks to @marcelthole and @boesing
 
 ## 3.0.1 - 2019-06-18
 
