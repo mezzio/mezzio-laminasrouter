@@ -1,7 +1,6 @@
 # laminas-mvc Router Integration for Mezzio
 
-[![Build Status](https://travis-ci.com/mezzio/mezzio-laminasrouter.svg?branch=master)](https://travis-ci.com/mezzio/mezzio-laminasrouter)
-[![Coverage Status](https://coveralls.io/repos/github/mezzio/mezzio-laminasrouter/badge.svg?branch=master)](https://coveralls.io/github/mezzio/mezzio-laminasrouter?branch=master)
+[![Build Status](https://github.com/mezzio/mezzio-laminasrouter/workflows/continuous-integration.yml/badge.svg)](https://github.com/mezzio/mezzio-laminasrouter/actions/workflows/continuous-integration.yml)
 
 Provides [Laminas's MVC router](https://github.com/laminas/laminas-mvc)
 integration for [mezzio](https://github.com/mezzio/mezzio).
