@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @see       https://github.com/mezzio/mezzio-laminasrouter for the canonical source repository
- * @copyright https://github.com/mezzio/mezzio-laminasrouter/blob/master/COPYRIGHT.md
- * @license   https://github.com/mezzio/mezzio-laminasrouter/blob/master/LICENSE.md New BSD License
- */
-
 declare(strict_types=1);
 
 namespace MezzioTest\Router\LaminasRouter;
@@ -17,17 +11,15 @@ use PHPUnit\Framework\TestCase;
 
 class ConfigProviderTest extends TestCase
 {
-    /**
-     * @var ConfigProvider
-     */
+    /** @var ConfigProvider */
     private $provider;
 
-    protected function setUp() : void
+    protected function setUp(): void
     {
         $this->provider = new ConfigProvider();
     }
 
-    public function testInvocationReturnsArray() : array
+    public function testInvocationReturnsArray(): array
     {
         $config = ($this->provider)();
         $this->assertIsArray($config);
@@ -38,7 +30,7 @@ class ConfigProviderTest extends TestCase
     /**
      * @depends testInvocationReturnsArray
      */
-    public function testReturnedArrayContainsDependencies(array $config) : void
+    public function testReturnedArrayContainsDependencies(array $config): void
     {
         $this->assertArrayHasKey('dependencies', $config);
         $this->assertIsArray($config['dependencies']);

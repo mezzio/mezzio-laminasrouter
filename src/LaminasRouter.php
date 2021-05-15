@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @see       https://github.com/mezzio/mezzio-laminasrouter for the canonical source repository
- * @copyright https://github.com/mezzio/mezzio-laminasrouter/blob/master/COPYRIGHT.md
- * @license   https://github.com/mezzio/mezzio-laminasrouter/blob/master/LICENSE.md New BSD License
- */
-
 declare(strict_types=1);
 
 namespace Mezzio\Router;
@@ -53,9 +47,7 @@ class LaminasRouter implements RouterInterface
      */
     private $routeNameMap = [];
 
-    /**
-     * @param Route[]
-     */
+    /** @var Route[] */
     private $routes = [];
 
     /**
@@ -65,17 +57,13 @@ class LaminasRouter implements RouterInterface
      */
     private $routesToInject = [];
 
-    /**
-     * @var TreeRouteStack
-     */
+    /** @var TreeRouteStack */
     private $laminasRouter;
 
     /**
-     * Constructor.
-     *
      * Lazy instantiates a TreeRouteStack if none is provided.
      */
-    public function __construct(TreeRouteStack $router = null)
+    public function __construct(?TreeRouteStack $router = null)
     {
         if (null === $router) {
             $router = $this->createRouter();
@@ -84,18 +72,18 @@ class LaminasRouter implements RouterInterface
         $this->laminasRouter = $router;
     }
 
-    public function addRoute(Route $route) : void
+    public function addRoute(Route $route): void
     {
         $this->routesToInject[] = $route;
     }
 
-    public function match(PsrRequest $request) : RouteResult
+    public function match(PsrRequest $request): RouteResult
     {
         // Must inject routes prior to matching.
         $this->injectRoutes();
 
         $laminasRequest = Psr7ServerRequest::toLaminas($request, true);
-        $match = $this->laminasRouter->match($laminasRequest);
+        $match          = $this->laminasRouter->match($laminasRequest);
 
         if (null === $match) {
             // No route matched at all; to indicate that it's not due to the
@@ -106,7 +94,7 @@ class LaminasRouter implements RouterInterface
         return $this->marshalSuccessResultFromRouteMatch($match);
     }
 
-    public function generateUri(string $name, array $substitutions = [], array $options = []) : string
+    public function generateUri(string $name, array $substitutions = [], array $options = []): string
     {
         // Must inject routes prior to generating URIs.
         $this->injectRoutes();
@@ -118,7 +106,7 @@ class LaminasRouter implements RouterInterface
             ));
         }
 
-        $name = isset($this->routeNameMap[$name]) ? $this->routeNameMap[$name] : $name;
+        $name = $this->routeNameMap[$name] ?? $name;
 
         $options = array_merge($options, [
             'name'             => $name,
@@ -128,7 +116,7 @@ class LaminasRouter implements RouterInterface
         return $this->laminasRouter->assemble($substitutions, $options);
     }
 
-    private function createRouter() : TreeRouteStack
+    private function createRouter(): TreeRouteStack
     {
         return new TreeRouteStack();
     }
@@ -136,7 +124,7 @@ class LaminasRouter implements RouterInterface
     /**
      * Create a successful RouteResult from the given RouteMatch.
      */
-    private function marshalSuccessResultFromRouteMatch(RouteMatch $match) : RouteResult
+    private function marshalSuccessResultFromRouteMatch(RouteMatch $match): RouteResult
     {
         $params = $match->getParams();
 
@@ -174,7 +162,7 @@ class LaminasRouter implements RouterInterface
     /**
      * Create route configuration for matching one or more HTTP methods.
      */
-    private function createHttpMethodRoute(Route $route) : array
+    private function createHttpMethodRoute(Route $route): array
     {
         return [
             'type'    => 'method',
@@ -195,7 +183,7 @@ class LaminasRouter implements RouterInterface
      * HTTP method route has already failed. By checking for this route later,
      * we can return a 405 response with the allowed methods.
      */
-    private function createMethodNotAllowedRoute(string $path) : array
+    private function createMethodNotAllowedRoute(string $path): array
     {
         return [
             'type'     => 'regex',
@@ -205,7 +193,7 @@ class LaminasRouter implements RouterInterface
                 'defaults' => [
                     self::METHOD_NOT_ALLOWED_ROUTE => $path,
                 ],
-                'spec' => '',
+                'spec'     => '',
             ],
         ];
     }
@@ -217,7 +205,7 @@ class LaminasRouter implements RouterInterface
      * match the names they were registered with; this method strips the method
      * route name if present.
      */
-    private function getMatchedRouteName(string $name) : string
+    private function getMatchedRouteName(string $name): string
     {
         // Check for <name>/GET:POST style route names; if so, strip off the
         // child route matching the method.
@@ -232,7 +220,7 @@ class LaminasRouter implements RouterInterface
     /**
      * Inject any unprocessed routes into the underlying router implementation.
      */
-    private function injectRoutes() : void
+    private function injectRoutes(): void
     {
         foreach ($this->routesToInject as $index => $route) {
             $this->injectRoute($route);
@@ -244,7 +232,7 @@ class LaminasRouter implements RouterInterface
     /**
      * Inject route into the underlying router implemetation.
      */
-    private function injectRoute(Route $route) : void
+    private function injectRoute(Route $route): void
     {
         $name    = $route->getName();
         $path    = $route->getPath();
@@ -283,7 +271,7 @@ class LaminasRouter implements RouterInterface
             'child_routes'  => [
                 $httpMethodRouteName           => $httpMethodRoute,
                 self::METHOD_NOT_ALLOWED_ROUTE => $methodNotAllowedRoute,
-            ]
+            ],
         ];
 
         if (array_key_exists($path, $this->allowedMethodsByPath)) {
@@ -294,6 +282,6 @@ class LaminasRouter implements RouterInterface
 
         $this->laminasRouter->addRoute($name, $spec);
         $this->allowedMethodsByPath[$path] = $allowedMethods;
-        $this->routeNameMap[$name] = sprintf('%s/%s', $name, $httpMethodRouteName);
+        $this->routeNameMap[$name]         = sprintf('%s/%s', $name, $httpMethodRouteName);
     }
 }
