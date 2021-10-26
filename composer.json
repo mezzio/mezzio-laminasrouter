@@ -28,8 +28,8 @@
         }
     },
     "require": {
-        "php": "^7.3 || ~8.0.0",
-        "fig/http-message-util": "^1.1.2",
+        "php": "^7.3 || ~8.0.0 || ~8.1.0",
+        "fig/http-message-util": "^1.1.5",
         "laminas/laminas-psr7bridge": "^0.2.2 || ^1.0.0",
         "laminas/laminas-router": "^3.3.0",
         "laminas/laminas-zendframework-bridge": "^1.0",
@@ -37,10 +37,11 @@
         "psr/http-message": "^1.0.1"
     },
     "require-dev": {
-        "laminas/laminas-coding-standard": "~2.2.0",
-        "laminas/laminas-i18n": "^2.7.4",
-        "laminas/laminas-stratigility": "^3.0",
-        "phpunit/phpunit": "^9.4.1"
+        "laminas/laminas-coding-standard": "^2.3.0",
+        "laminas/laminas-i18n": "dev-feature/php-8.1 as 2.11.99",
+        "laminas/laminas-stratigility": "^3.5",
+        "phpspec/prophecy-phpunit": "^2.0",
+        "phpunit/phpunit": "^9.5.10"
     },
     "autoload": {
         "psr-4": {
@@ -64,5 +65,11 @@
     },
     "replace": {
         "zendframework/zend-expressive-zendrouter": "^3.0.1"
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/cedric-anne/laminas-i18n.git"
+        }
+    ]
 }
