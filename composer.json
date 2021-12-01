@@ -38,7 +38,7 @@
     },
     "require-dev": {
         "laminas/laminas-coding-standard": "^2.3.0",
-        "laminas/laminas-i18n": "dev-feature/php-8.1 as 2.11.99",
+        "laminas/laminas-i18n": "~2.12",
         "laminas/laminas-stratigility": "^3.5",
         "phpspec/prophecy-phpunit": "^2.0",
         "phpunit/phpunit": "^9.5.10"
@@ -65,11 +65,5 @@
     },
     "replace": {
         "zendframework/zend-expressive-zendrouter": "^3.0.1"
-    },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/cedric-anne/laminas-i18n.git"
-        }
-    ]
+    }
 }
