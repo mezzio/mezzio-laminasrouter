@@ -136,8 +136,8 @@ class LaminasRouter implements RouterInterface
 
         $routeName = $this->getMatchedRouteName($match->getMatchedRouteName());
 
-        $route = array_reduce($this->routes, function ($matched, $route) use ($routeName) {
-            if ($matched) {
+        $route = array_reduce($this->routes, static function (?Route $matched, Route $route) use ($routeName): ?Route {
+            if ($matched instanceof Route) {
                 return $matched;
             }
 
@@ -146,10 +146,10 @@ class LaminasRouter implements RouterInterface
                 return $route;
             }
 
-            return false;
-        }, false);
+            return null;
+        }, null);
 
-        if (! $route) {
+        if (null === $route) {
             // This should never happen, as Mezzio\Router\Route always
             // ensures a non-empty route name. Marking as failed route to be
             // consistent with other implementations.
