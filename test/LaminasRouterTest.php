@@ -7,6 +7,7 @@ namespace MezzioTest\Router;
 use Closure;
 use Fig\Http\Message\RequestMethodInterface as RequestMethod;
 use Laminas\Diactoros\ServerRequest;
+use Laminas\Diactoros\Uri;
 use Laminas\Http\Request as LaminasRequest;
 use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\Psr7Bridge\Psr7ServerRequest;
@@ -559,5 +560,22 @@ class LaminasRouterTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('route not found');
         $router->generateUri('foo');
+    }
+
+    public function testMatchReturnsRouteFailureOnFailureToConvertPsr7Request(): void
+    {
+        $route = new Route('/some/path', $this->getMiddleware(), [RequestMethod::METHOD_GET], 'test');
+
+        $router = new LaminasRouter();
+        $router->addRoute($route);
+
+        $serverRequest = (new ServerRequest())
+            ->withUri(new Uri('https://${ip}/some/path'))
+            ->withHeader('Host', '${ip}')
+            ->withHeader('Accept', 'application/json');
+
+        $result = $router->match($serverRequest);
+
+        $this->assertTrue($result->isFailure());
     }
 }

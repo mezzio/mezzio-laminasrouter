@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Mezzio\Router;
 
+use Laminas\Http\Exception\InvalidArgumentException;
 use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Laminas\Router\Http\TreeRouteStack;
 use Laminas\Router\RouteMatch;
+use Laminas\Uri\Exception\InvalidUriPartException;
 use Psr\Http\Message\ServerRequestInterface as PsrRequest;
 
 use function array_key_exists;
@@ -82,8 +84,17 @@ class LaminasRouter implements RouterInterface
         // Must inject routes prior to matching.
         $this->injectRoutes();
 
-        $laminasRequest = Psr7ServerRequest::toLaminas($request, true);
-        $match          = $this->laminasRouter->match($laminasRequest);
+        try {
+            $laminasRequest = Psr7ServerRequest::toLaminas($request, true);
+        } catch (InvalidArgumentException $e) {
+            $previous = $e->getPrevious();
+            if ($previous instanceof InvalidUriPartException) {
+                return RouteResult::fromRouteFailure(null);
+            }
+            throw $e;
+        }
+
+        $match = $this->laminasRouter->match($laminasRequest);
 
         if (null === $match) {
             // No route matched at all; to indicate that it's not due to the
