@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="4.24.0@06dd975cb55d36af80f242561738f16c5f58264f">
+  <file src="src/LaminasRouter.php">
+    <MixedArgument occurrences="2">
+      <code>$this-&gt;allowedMethodsByPath[$params[self::METHOD_NOT_ALLOWED_ROUTE]]</code>
+      <code>$this-&gt;allowedMethodsByPath[$path]</code>
+    </MixedArgument>
+    <MixedArrayAccess occurrences="1">
+      <code>$options['defaults']['middleware']</code>
+    </MixedArrayAccess>
+    <MixedArrayOffset occurrences="1">
+      <code>$this-&gt;allowedMethodsByPath[$params[self::METHOD_NOT_ALLOWED_ROUTE]]</code>
+    </MixedArrayOffset>
+    <MixedAssignment occurrences="1">
+      <code>$name</code>
+    </MixedAssignment>
+    <MixedInferredReturnType occurrences="1">
+      <code>string</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement occurrences="1">
+      <code>$this-&gt;laminasRouter-&gt;assemble($substitutions, $options)</code>
+    </MixedReturnStatement>
+    <PossiblyNullArgument occurrences="2">
+      <code>$allowedMethods</code>
+      <code>$route-&gt;getAllowedMethods()</code>
+    </PossiblyNullArgument>
+  </file>
+  <file src="test/LaminasRouter/ConfigProviderTest.php">
+    <RedundantCondition occurrences="1">
+      <code>assertIsArray</code>
+    </RedundantCondition>
+  </file>
+  <file src="test/LaminasRouterTest.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$serverRequest</code>
+    </ArgumentTypeCoercion>
+    <InvalidArgument occurrences="4">
+      <code>Argument::type(LaminasRequest::class)</code>
+      <code>Argument::type(LaminasRequest::class)</code>
+      <code>Argument::type(LaminasRequest::class)</code>
+      <code>Argument::type(LaminasRequest::class)</code>
+    </InvalidArgument>
+    <MixedArgument occurrences="2">
+      <code>$routesToInject</code>
+      <code>$this-&gt;laminasRouter-&gt;reveal()</code>
+    </MixedArgument>
+    <MixedAssignment occurrences="1">
+      <code>$routesToInject</code>
+    </MixedAssignment>
+    <MixedMethodCall occurrences="2">
+      <code>willReturn</code>
+      <code>willReturn</code>
+    </MixedMethodCall>
+    <PossiblyFalseReference occurrences="3">
+      <code>getMiddleware</code>
+      <code>getMiddleware</code>
+      <code>getMiddleware</code>
+    </PossiblyFalseReference>
+    <PossiblyInvalidFunctionCall occurrences="2"/>
+    <PossiblyInvalidMethodCall occurrences="2">
+      <code>willReturn</code>
+      <code>willReturn</code>
+    </PossiblyInvalidMethodCall>
+    <PossiblyNullReference occurrences="8">
+      <code>getMiddleware</code>
+      <code>getMiddleware</code>
+      <code>getMiddleware</code>
+      <code>willReturn</code>
+      <code>willReturn</code>
+      <code>willReturn</code>
+      <code>willReturn</code>
+      <code>willReturn</code>
+    </PossiblyNullReference>
+    <PossiblyUndefinedMethod occurrences="11">
+      <code>reveal</code>
+      <code>shouldBeCalled</code>
+      <code>shouldBeCalled</code>
+      <code>shouldBeCalled</code>
+      <code>shouldBeCalled</code>
+      <code>shouldBeCalled</code>
+      <code>willReturn</code>
+      <code>willReturn</code>
+      <code>willReturn</code>
+      <code>willReturn</code>
+      <code>willReturn</code>
+    </PossiblyUndefinedMethod>
+    <TooFewArguments occurrences="1">
+      <code>RouteResult::fromRouteFailure()</code>
+    </TooFewArguments>
+    <UndefinedMethod occurrences="1">
+      <code>RouteResult::fromRouteMatch('/foo', 'bar')</code>
+    </UndefinedMethod>
+    <UnnecessaryVarAnnotation occurrences="2">
+      <code>MiddlewareInterface</code>
+      <code>ServerRequestInterface</code>
+    </UnnecessaryVarAnnotation>
+  </file>
+</files>
