@@ -46,7 +46,9 @@
         "laminas/laminas-i18n": "~2.12",
         "laminas/laminas-stratigility": "^3.5",
         "phpspec/prophecy-phpunit": "^2.0",
-        "phpunit/phpunit": "^9.5.10"
+        "phpunit/phpunit": "^9.5.10",
+        "psalm/plugin-phpunit": "^0.17.0",
+        "vimeo/psalm": "^4.24"
     },
     "autoload": {
         "psr-4": {
