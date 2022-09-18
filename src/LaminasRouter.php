@@ -37,30 +37,25 @@ class LaminasRouter implements RouterInterface
 
     /**
      * Store the HTTP methods allowed for each path.
-     *
-     * @var array
      */
-    private $allowedMethodsByPath = [];
+    private array $allowedMethodsByPath = [];
 
     /**
      * Map a named route to a Laminas route name to use for URI generation.
-     *
-     * @var array
      */
-    private $routeNameMap = [];
+    private array $routeNameMap = [];
 
     /** @var Route[] */
-    private $routes = [];
+    private array $routes = [];
 
     /**
      * Routes aggregated to inject.
      *
      * @var Route[]
      */
-    private $routesToInject = [];
+    private array $routesToInject = [];
 
-    /** @var TreeRouteStack */
-    private $laminasRouter;
+    private TreeRouteStack $laminasRouter;
 
     /**
      * Lazy instantiates a TreeRouteStack if none is provided.
