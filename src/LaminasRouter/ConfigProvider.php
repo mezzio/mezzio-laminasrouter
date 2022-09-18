@@ -6,7 +6,6 @@ namespace Mezzio\Router\LaminasRouter;
 
 use Mezzio\Router\LaminasRouter;
 use Mezzio\Router\RouterInterface;
-use Zend\Expressive\Router\ZendRouter;
 
 class ConfigProvider
 {
@@ -24,8 +23,8 @@ class ConfigProvider
                 RouterInterface::class => LaminasRouter::class,
 
                 // Legacy Zend Framework aliases
-                \Zend\Expressive\Router\RouterInterface::class => RouterInterface::class,
-                ZendRouter::class                              => LaminasRouter::class,
+                'Zend\Expressive\Router\RouterInterface' => RouterInterface::class,
+                'Zend\Expressive\Router\ZendRouter'      => LaminasRouter::class,
             ],
             'invokables' => [
                 LaminasRouter::class => LaminasRouter::class,
