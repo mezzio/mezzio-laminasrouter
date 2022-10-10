@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.27.0@faf106e717c37b8c81721845dba9de3d8deed8ff">
+<files psalm-version="4.28.0@52e96bea381e6cb07a672aefec791a5817694a26">
   <file src="src/LaminasRouter.php">
     <MixedArgument occurrences="2">
       <code>$this-&gt;allowedMethodsByPath[$params[self::METHOD_NOT_ALLOWED_ROUTE]]</code>
@@ -31,65 +31,34 @@
     </RedundantCondition>
   </file>
   <file src="test/LaminasRouterTest.php">
-    <InvalidArgument occurrences="4">
-      <code>Argument::type(LaminasRequest::class)</code>
-      <code>Argument::type(LaminasRequest::class)</code>
-      <code>Argument::type(LaminasRequest::class)</code>
-      <code>Argument::type(LaminasRequest::class)</code>
-    </InvalidArgument>
-    <MixedArgument occurrences="2">
+    <MixedArgument occurrences="1">
       <code>$routesToInject</code>
-      <code>$this-&gt;laminasRouter-&gt;reveal()</code>
     </MixedArgument>
     <MixedAssignment occurrences="1">
       <code>$routesToInject</code>
     </MixedAssignment>
-    <MixedMethodCall occurrences="2">
-      <code>willReturn</code>
-      <code>willReturn</code>
-    </MixedMethodCall>
+    <MixedInferredReturnType occurrences="1">
+      <code>array</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement occurrences="1">
+      <code>$this-&gt;routesToInject</code>
+    </MixedReturnStatement>
     <PossiblyFalseReference occurrences="3">
       <code>getMiddleware</code>
       <code>getMiddleware</code>
       <code>getMiddleware</code>
     </PossiblyFalseReference>
-    <PossiblyInvalidFunctionCall occurrences="2"/>
-    <PossiblyInvalidMethodCall occurrences="2">
-      <code>willReturn</code>
-      <code>willReturn</code>
-    </PossiblyInvalidMethodCall>
-    <PossiblyNullReference occurrences="8">
+    <PossiblyInvalidFunctionCall occurrences="2">
+      <code>Closure::bind($fn, $router, LaminasRouter::class)()</code>
+      <code>Closure::bind(fn() =&gt; $this-&gt;laminasRouter, $router, LaminasRouter::class)()</code>
+    </PossiblyInvalidFunctionCall>
+    <PossiblyNullReference occurrences="3">
       <code>getMiddleware</code>
       <code>getMiddleware</code>
       <code>getMiddleware</code>
-      <code>willReturn</code>
-      <code>willReturn</code>
-      <code>willReturn</code>
-      <code>willReturn</code>
-      <code>willReturn</code>
     </PossiblyNullReference>
-    <PossiblyUndefinedMethod occurrences="11">
-      <code>reveal</code>
-      <code>shouldBeCalled</code>
-      <code>shouldBeCalled</code>
-      <code>shouldBeCalled</code>
-      <code>shouldBeCalled</code>
-      <code>shouldBeCalled</code>
-      <code>willReturn</code>
-      <code>willReturn</code>
-      <code>willReturn</code>
-      <code>willReturn</code>
-      <code>willReturn</code>
-    </PossiblyUndefinedMethod>
-    <TooFewArguments occurrences="1">
-      <code>RouteResult::fromRouteFailure()</code>
-    </TooFewArguments>
-    <UndefinedMethod occurrences="1">
-      <code>RouteResult::fromRouteMatch('/foo', 'bar')</code>
-    </UndefinedMethod>
-    <UnnecessaryVarAnnotation occurrences="2">
-      <code>MiddlewareInterface</code>
-      <code>ServerRequestInterface</code>
-    </UnnecessaryVarAnnotation>
+    <UndefinedThisPropertyFetch occurrences="1">
+      <code>$this-&gt;routesToInject</code>
+    </UndefinedThisPropertyFetch>
   </file>
 </files>

@@ -7,6 +7,7 @@ namespace MezzioTest\Router;
 use Closure;
 use Fig\Http\Message\RequestMethodInterface as RequestMethod;
 use Laminas\Diactoros\ServerRequest;
+use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\Diactoros\Uri;
 use Laminas\Http\Request as LaminasRequest;
 use Laminas\I18n\Translator\TranslatorInterface;
@@ -17,64 +18,43 @@ use Mezzio\Router\Exception\RuntimeException;
 use Mezzio\Router\LaminasRouter;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Prophecy\Argument;
-use Prophecy\PhpUnit\ProphecyTrait;
-use Prophecy\Prophecy\ObjectProphecy;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
 use Psr\Http\Server\MiddlewareInterface;
 
 class LaminasRouterTest extends TestCase
 {
-    use ProphecyTrait;
-
-    /** @var TreeRouteStack|ObjectProphecy */
-    private $laminasRouter;
-    /** @var Route[] */
-    private ?array $routesToInject = null;
+    /** @var TreeRouteStack&MockObject */
+    private TreeRouteStack $laminasRouter;
 
     protected function setUp(): void
     {
-        $this->laminasRouter = $this->prophesize(TreeRouteStack::class);
+        $this->laminasRouter = $this->createMock(TreeRouteStack::class);
     }
 
     private function getRouter(): LaminasRouter
     {
-        return new LaminasRouter($this->laminasRouter->reveal());
+        return new LaminasRouter($this->laminasRouter);
     }
 
     private function getMiddleware(): MiddlewareInterface
     {
-        return $this->prophesize(MiddlewareInterface::class)->reveal();
+        return $this->createMock(MiddlewareInterface::class);
     }
 
     public function testWillLazyInstantiateALaminasTreeRouteStackIfNoneIsProvidedToConstructor(): void
     {
         $router        = new LaminasRouter();
         $laminasRouter = Closure::bind(fn() => $this->laminasRouter, $router, LaminasRouter::class)();
-        $this->assertInstanceOf(TreeRouteStack::class, $laminasRouter);
+        self::assertInstanceOf(TreeRouteStack::class, $laminasRouter);
     }
 
-    /**
-     * @return ObjectProphecy<ServerRequestInterface>
-     **/
-    public function createRequestProphecy(string $requestMethod = RequestMethod::METHOD_GET): ObjectProphecy
+    private function createRequest(string $requestMethod = RequestMethod::METHOD_GET): ServerRequestInterface
     {
-        $request = $this->prophesize(ServerRequestInterface::class);
+        $uri = new Uri('https://www.example.com/foo');
 
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getPath()->willReturn('/foo');
-        $uri->__toString()->willReturn('http://www.example.com/foo');
-
-        $request->getMethod()->willReturn($requestMethod);
-        $request->getUri()->will([$uri, 'reveal']);
-        $request->getHeaders()->willReturn([]);
-        $request->getCookieParams()->willReturn([]);
-        $request->getQueryParams()->willReturn([]);
-        $request->getServerParams()->willReturn([]);
-
-        return $request;
+        return (new ServerRequestFactory())->createServerRequest($requestMethod, $uri);
     }
 
     public function testAddingRouteAggregatesInRouter(): void
@@ -83,8 +63,10 @@ class LaminasRouterTest extends TestCase
         $router = $this->getRouter();
         $router->addRoute($route);
 
-        $routesToInject = Closure::bind(fn() => $this->routesToInject, $router, LaminasRouter::class)();
-        $this->assertContains($route, $routesToInject);
+        /** @psalm-var Closure(): list<Route> $fn */
+        $fn             = fn(): array => $this->routesToInject;
+        $routesToInject = Closure::bind($fn, $router, LaminasRouter::class)();
+        self::assertContains($route, $routesToInject);
     }
 
     /**
@@ -95,42 +77,45 @@ class LaminasRouterTest extends TestCase
         $middleware = $this->getMiddleware();
         $route      = new Route('/foo', $middleware, [RequestMethod::METHOD_GET]);
 
-        $this->laminasRouter->addRoute('/foo^GET', [
-            'type'          => 'segment',
-            'options'       => [
-                'route' => '/foo',
-            ],
-            'may_terminate' => false,
-            'child_routes'  => [
-                RequestMethod::METHOD_GET               => [
-                    'type'    => 'method',
-                    'options' => [
-                        'verb'     => RequestMethod::METHOD_GET,
-                        'defaults' => [
-                            'middleware' => $middleware,
+        $this->laminasRouter->expects(self::once())
+            ->method('addRoute')
+            ->with('/foo^GET', [
+                'type'          => 'segment',
+                'options'       => [
+                    'route' => '/foo',
+                ],
+                'may_terminate' => false,
+                'child_routes'  => [
+                    RequestMethod::METHOD_GET               => [
+                        'type'    => 'method',
+                        'options' => [
+                            'verb'     => RequestMethod::METHOD_GET,
+                            'defaults' => [
+                                'middleware' => $middleware,
+                            ],
+                        ],
+                    ],
+                    LaminasRouter::METHOD_NOT_ALLOWED_ROUTE => [
+                        'type'     => 'regex',
+                        'priority' => -1,
+                        'options'  => [
+                            'regex'    => '',
+                            'defaults' => [
+                                LaminasRouter::METHOD_NOT_ALLOWED_ROUTE => '/foo',
+                            ],
+                            'spec'     => '',
                         ],
                     ],
                 ],
-                LaminasRouter::METHOD_NOT_ALLOWED_ROUTE => [
-                    'type'     => 'regex',
-                    'priority' => -1,
-                    'options'  => [
-                        'regex'    => '',
-                        'defaults' => [
-                            LaminasRouter::METHOD_NOT_ALLOWED_ROUTE => '/foo',
-                        ],
-                        'spec'     => '',
-                    ],
-                ],
-            ],
-        ])->shouldBeCalled();
+            ]);
 
         $router = $this->getRouter();
         $router->addRoute($route);
-
-        /** @var ServerRequestInterface $request */
-        $request = $this->createRequestProphecy()->reveal();
-        $this->laminasRouter->match(Argument::type(LaminasRequest::class))->willReturn(null);
+        $request = $this->createRequest();
+        $this->laminasRouter->expects(self::once())
+            ->method('match')
+            ->with(self::isInstanceOf(LaminasRequest::class))
+            ->willReturn(null);
 
         $router->match($request);
     }
@@ -143,48 +128,57 @@ class LaminasRouterTest extends TestCase
         $middleware = $this->getMiddleware();
         $route      = new Route('/foo', $middleware, [RequestMethod::METHOD_GET]);
 
-        $this->laminasRouter->addRoute('/foo^GET', [
-            'type'          => 'segment',
-            'options'       => [
-                'route' => '/foo',
-            ],
-            'may_terminate' => false,
-            'child_routes'  => [
-                RequestMethod::METHOD_GET               => [
-                    'type'    => 'method',
-                    'options' => [
-                        'verb'     => RequestMethod::METHOD_GET,
-                        'defaults' => [
-                            'middleware' => $middleware,
+        $this->laminasRouter->expects(self::once())
+            ->method('addRoute')
+            ->with('/foo^GET', [
+                'type'          => 'segment',
+                'options'       => [
+                    'route' => '/foo',
+                ],
+                'may_terminate' => false,
+                'child_routes'  => [
+                    RequestMethod::METHOD_GET               => [
+                        'type'    => 'method',
+                        'options' => [
+                            'verb'     => RequestMethod::METHOD_GET,
+                            'defaults' => [
+                                'middleware' => $middleware,
+                            ],
+                        ],
+                    ],
+                    LaminasRouter::METHOD_NOT_ALLOWED_ROUTE => [
+                        'type'     => 'regex',
+                        'priority' => -1,
+                        'options'  => [
+                            'regex'    => '',
+                            'defaults' => [
+                                LaminasRouter::METHOD_NOT_ALLOWED_ROUTE => '/foo',
+                            ],
+                            'spec'     => '',
                         ],
                     ],
                 ],
-                LaminasRouter::METHOD_NOT_ALLOWED_ROUTE => [
-                    'type'     => 'regex',
-                    'priority' => -1,
-                    'options'  => [
-                        'regex'    => '',
-                        'defaults' => [
-                            LaminasRouter::METHOD_NOT_ALLOWED_ROUTE => '/foo',
-                        ],
-                        'spec'     => '',
-                    ],
-                ],
-            ],
-        ])->shouldBeCalled();
-        $this->laminasRouter->hasRoute('foo')->willReturn(true);
-        $this->laminasRouter->assemble(
-            [],
-            [
-                'name'             => 'foo',
-                'only_return_path' => true,
-            ]
-        )->willReturn('/foo');
+            ]);
+
+        $this->laminasRouter->expects(self::once())
+            ->method('hasRoute')
+            ->with('foo')
+            ->willReturn(true);
+        $this->laminasRouter->expects(self::once())
+            ->method('assemble')
+            ->with(
+                [],
+                [
+                    'name'             => 'foo',
+                    'only_return_path' => true,
+                ]
+            )
+            ->willReturn('/foo');
 
         $router = $this->getRouter();
         $router->addRoute($route);
 
-        $this->assertEquals('/foo', $router->generateUri('foo'));
+        self::assertEquals('/foo', $router->generateUri('foo'));
     }
 
     public function testCanSpecifyRouteOptions(): void
@@ -200,70 +194,62 @@ class LaminasRouterTest extends TestCase
             ],
         ]);
 
-        $this->laminasRouter->addRoute('/foo/:id^GET', [
-            'type'          => 'segment',
-            'options'       => [
-                'route'       => '/foo/:id',
-                'constraints' => [
-                    'id' => '\d+',
+        $this->laminasRouter->expects(self::once())
+            ->method('addRoute')
+            ->with('/foo/:id^GET', [
+                'type'          => 'segment',
+                'options'       => [
+                    'route'       => '/foo/:id',
+                    'constraints' => [
+                        'id' => '\d+',
+                    ],
+                    'defaults'    => [
+                        'bar' => 'baz',
+                    ],
                 ],
-                'defaults'    => [
-                    'bar' => 'baz',
-                ],
-            ],
-            'may_terminate' => false,
-            'child_routes'  => [
-                RequestMethod::METHOD_GET               => [
-                    'type'    => 'method',
-                    'options' => [
-                        'verb'     => RequestMethod::METHOD_GET,
-                        'defaults' => [
-                            'middleware' => $middleware,
+                'may_terminate' => false,
+                'child_routes'  => [
+                    RequestMethod::METHOD_GET               => [
+                        'type'    => 'method',
+                        'options' => [
+                            'verb'     => RequestMethod::METHOD_GET,
+                            'defaults' => [
+                                'middleware' => $middleware,
+                            ],
+                        ],
+                    ],
+                    LaminasRouter::METHOD_NOT_ALLOWED_ROUTE => [
+                        'type'     => 'regex',
+                        'priority' => -1,
+                        'options'  => [
+                            'regex'    => '',
+                            'defaults' => [
+                                LaminasRouter::METHOD_NOT_ALLOWED_ROUTE => '/foo/:id',
+                            ],
+                            'spec'     => '',
                         ],
                     ],
                 ],
-                LaminasRouter::METHOD_NOT_ALLOWED_ROUTE => [
-                    'type'     => 'regex',
-                    'priority' => -1,
-                    'options'  => [
-                        'regex'    => '',
-                        'defaults' => [
-                            LaminasRouter::METHOD_NOT_ALLOWED_ROUTE => '/foo/:id',
-                        ],
-                        'spec'     => '',
-                    ],
-                ],
-            ],
-        ])->shouldBeCalled();
+            ]);
 
-        $this->laminasRouter->hasRoute('foo')->willReturn(true);
-        $this->laminasRouter->assemble(
-            [],
-            [
-                'name'             => 'foo',
-                'only_return_path' => true,
-            ]
-        )->willReturn('/foo');
+        $this->laminasRouter->expects(self::once())
+            ->method('hasRoute')
+            ->with('foo')
+            ->willReturn(true);
+        $this->laminasRouter->expects(self::once())
+            ->method('assemble')
+            ->with(
+                [],
+                [
+                    'name'             => 'foo',
+                    'only_return_path' => true,
+                ]
+            )
+            ->willReturn('/foo');
 
         $router = $this->getRouter();
         $router->addRoute($route);
         $router->generateUri('foo');
-    }
-
-    public function routeResults(): array
-    {
-        /** @var MiddlewareInterface $middleware */
-        $middleware = $this->prophesize(MiddlewareInterface::class)->reveal();
-        return [
-            'success' => [
-                new Route('/foo', $middleware),
-                RouteResult::fromRouteMatch('/foo', 'bar'),
-            ],
-            'failure' => [
-                new Route('/foo', $middleware),
-                RouteResult::fromRouteFailure(),
-            ],
-        ];
     }
 
     public function testMatch(): void
@@ -281,35 +267,30 @@ class LaminasRouterTest extends TestCase
         );
 
         $result = $laminasRouter->match($request);
-        $this->assertInstanceOf(RouteResult::class, $result);
-        $this->assertEquals('/foo^GET', $result->getMatchedRouteName());
-        $this->assertEquals($middleware, $result->getMatchedRoute()->getMiddleware());
+        self::assertInstanceOf(RouteResult::class, $result);
+        self::assertEquals('/foo^GET', $result->getMatchedRouteName());
+        self::assertEquals($middleware, $result->getMatchedRoute()->getMiddleware());
     }
 
     public function testReturnsRouteFailureForRouteInjectedManuallyIntoBaseRouterButNotRouterBridge(): void
     {
-        $uri = $this->prophesize(UriInterface::class);
-        $uri->getPath()->willReturn('/foo');
-
-        $request        = new ServerRequest(
-            ['REQUEST_METHOD' => RequestMethod::METHOD_GET],
-            [],
-            '/foo',
-            RequestMethod::METHOD_GET
-        );
+        $request        = $this->createRequest();
         $laminasRequest = Psr7ServerRequest::toLaminas($request);
 
         $routeMatch = new \Laminas\Router\Http\RouteMatch([], 4);
         $routeMatch->setMatchedRouteName('/foo');
 
-        $this->laminasRouter->match($laminasRequest)->willReturn($routeMatch);
+        $this->laminasRouter->expects(self::once())
+            ->method('match')
+            ->with($laminasRequest)
+            ->willReturn($routeMatch);
 
         $router = $this->getRouter();
         $result = $router->match($request);
 
-        $this->assertInstanceOf(RouteResult::class, $result);
-        $this->assertTrue($result->isFailure());
-        $this->assertFalse($result->isMethodFailure());
+        self::assertInstanceOf(RouteResult::class, $result);
+        self::assertTrue($result->isFailure());
+        self::assertFalse($result->isMethodFailure());
     }
 
     public function testMatchedRouteNameWhenGetMethodAllowed(): void
@@ -326,10 +307,10 @@ class LaminasRouterTest extends TestCase
             RequestMethod::METHOD_GET
         );
         $result  = $laminasRouter->match($request);
-        $this->assertInstanceOf(RouteResult::class, $result);
-        $this->assertTrue($result->isSuccess());
-        $this->assertSame('/foo', $result->getMatchedRouteName());
-        $this->assertSame($middleware, $result->getMatchedRoute()->getMiddleware());
+        self::assertInstanceOf(RouteResult::class, $result);
+        self::assertTrue($result->isSuccess());
+        self::assertSame('/foo', $result->getMatchedRouteName());
+        self::assertSame($middleware, $result->getMatchedRoute()->getMiddleware());
     }
 
     /**
@@ -337,29 +318,39 @@ class LaminasRouterTest extends TestCase
      */
     public function testSuccessfulMatchIsPossible(): void
     {
-        $routeMatch = $this->prophesize(RouteMatch::class);
-        $routeMatch->getMatchedRouteName()->willReturn('/foo');
-        $routeMatch->getParams()->willReturn([
-            'middleware' => 'bar',
-        ]);
+        $routeMatch = $this->createMock(RouteMatch::class);
+        $routeMatch->expects(self::once())
+            ->method('getMatchedRouteName')
+            ->willReturn('/foo');
+        $routeMatch->expects(self::once())
+            ->method('getParams')
+            ->willReturn([
+                'middleware' => 'bar',
+            ]);
 
-        $this->laminasRouter
-            ->match(Argument::type(LaminasRequest::class))
-            ->willReturn($routeMatch->reveal());
-        $this->laminasRouter
-            ->addRoute('/foo', Argument::type('array'))
-            ->shouldBeCalled();
+        $this->laminasRouter->expects(self::once())
+            ->method('match')
+            ->with(self::isInstanceOf(LaminasRequest::class))
+            ->willReturn($routeMatch);
 
-        $request = $this->createRequestProphecy();
+        $this->laminasRouter->expects(self::once())
+            ->method('addRoute')
+            ->with('/foo', self::callback(function ($arg): bool {
+                self::assertIsArray($arg);
+
+                return true;
+            }));
+
+        $request = $this->createRequest();
 
         $middleware = $this->getMiddleware();
         $router     = $this->getRouter();
         $router->addRoute(new Route('/foo', $middleware, [RequestMethod::METHOD_GET], '/foo'));
-        $result = $router->match($request->reveal());
-        $this->assertInstanceOf(RouteResult::class, $result);
-        $this->assertTrue($result->isSuccess());
-        $this->assertSame('/foo', $result->getMatchedRouteName());
-        $this->assertSame($middleware, $result->getMatchedRoute()->getMiddleware());
+        $result = $router->match($request);
+        self::assertInstanceOf(RouteResult::class, $result);
+        self::assertTrue($result->isSuccess());
+        self::assertSame('/foo', $result->getMatchedRouteName());
+        self::assertSame($middleware, $result->getMatchedRoute()->getMiddleware());
     }
 
     /**
@@ -367,17 +358,18 @@ class LaminasRouterTest extends TestCase
      */
     public function testNonSuccessfulMatchNotDueToHttpMethodsIsPossible(): void
     {
-        $this->laminasRouter
-            ->match(Argument::type(LaminasRequest::class))
+        $this->laminasRouter->expects(self::once())
+            ->method('match')
+            ->with(self::isInstanceOf(LaminasRequest::class))
             ->willReturn(null);
 
-        $request = $this->createRequestProphecy();
+        $request = $this->createRequest();
 
         $router = $this->getRouter();
-        $result = $router->match($request->reveal());
-        $this->assertInstanceOf(RouteResult::class, $result);
-        $this->assertTrue($result->isFailure());
-        $this->assertFalse($result->isMethodFailure());
+        $result = $router->match($request);
+        self::assertInstanceOf(RouteResult::class, $result);
+        self::assertTrue($result->isFailure());
+        self::assertFalse($result->isMethodFailure());
     }
 
     /**
@@ -399,10 +391,10 @@ class LaminasRouterTest extends TestCase
         );
         $result  = $router->match($request);
 
-        $this->assertInstanceOf(RouteResult::class, $result);
-        $this->assertTrue($result->isFailure());
-        $this->assertTrue($result->isMethodFailure());
-        $this->assertEquals([RequestMethod::METHOD_POST, RequestMethod::METHOD_DELETE], $result->getAllowedMethods());
+        self::assertInstanceOf(RouteResult::class, $result);
+        self::assertTrue($result->isFailure());
+        self::assertTrue($result->isMethodFailure());
+        self::assertEquals([RequestMethod::METHOD_POST, RequestMethod::METHOD_DELETE], $result->getAllowedMethods());
     }
 
     /**
@@ -424,10 +416,10 @@ class LaminasRouterTest extends TestCase
         );
         $result  = $router->match($request);
 
-        $this->assertInstanceOf(RouteResult::class, $result);
-        $this->assertTrue($result->isFailure());
-        $this->assertTrue($result->isMethodFailure());
-        $this->assertEquals([RequestMethod::METHOD_POST, RequestMethod::METHOD_DELETE], $result->getAllowedMethods());
+        self::assertInstanceOf(RouteResult::class, $result);
+        self::assertTrue($result->isFailure());
+        self::assertTrue($result->isMethodFailure());
+        self::assertEquals([RequestMethod::METHOD_POST, RequestMethod::METHOD_DELETE], $result->getAllowedMethods());
     }
 
     /**
@@ -446,10 +438,10 @@ class LaminasRouterTest extends TestCase
         $router->addRoute($route3);
         $router->addRoute($route4);
 
-        $this->assertEquals('/foo', $router->generateUri('foo-create'));
-        $this->assertEquals('/foo', $router->generateUri('foo-list'));
-        $this->assertEquals('/foo/bar', $router->generateUri('foo', ['id' => 'bar']));
-        $this->assertEquals('/bar/BAZ', $router->generateUri('bar', ['baz' => 'BAZ']));
+        self::assertEquals('/foo', $router->generateUri('foo-create'));
+        self::assertEquals('/foo', $router->generateUri('foo-list'));
+        self::assertEquals('/foo/bar', $router->generateUri('foo', ['id' => 'bar']));
+        self::assertEquals('/bar/BAZ', $router->generateUri('bar', ['baz' => 'BAZ']));
     }
 
     /**
@@ -468,37 +460,47 @@ class LaminasRouterTest extends TestCase
             RequestMethod::METHOD_GET
         );
         $result  = $router->match($request);
-        $this->assertTrue($result->isFailure());
-        $this->assertFalse($result->isMethodFailure());
+        self::assertTrue($result->isFailure());
+        self::assertFalse($result->isMethodFailure());
     }
 
     public function testSuccessfulMatchingComposesRouteInRouteResult(): void
     {
         $route = new Route('/foo', $this->getMiddleware(), [RequestMethod::METHOD_GET]);
 
-        $routeMatch = $this->prophesize(RouteMatch::class);
-        $routeMatch->getMatchedRouteName()->willReturn($route->getName());
-        $routeMatch->getParams()->willReturn([
-            'middleware' => $route->getMiddleware(),
-        ]);
+        $routeMatch = $this->createMock(RouteMatch::class);
+        $routeMatch->expects(self::once())
+            ->method('getMatchedRouteName')
+            ->willReturn($route->getName());
 
-        $this->laminasRouter
-            ->match(Argument::type(LaminasRequest::class))
-            ->willReturn($routeMatch->reveal());
-        $this->laminasRouter
-            ->addRoute('/foo^GET', Argument::type('array'))
-            ->shouldBeCalled();
+        $routeMatch->expects(self::once())
+            ->method('getParams')
+            ->willReturn([
+                'middleware' => $route->getMiddleware(),
+            ]);
 
-        $request = $this->createRequestProphecy();
+        $this->laminasRouter->expects(self::once())
+            ->method('match')
+            ->with(self::isInstanceOf(LaminasRequest::class))
+            ->willReturn($routeMatch);
+        $this->laminasRouter->expects(self::once())
+            ->method('addRoute')
+            ->with('/foo^GET', self::callback(static function (mixed $arg): bool {
+                self::assertIsArray($arg);
+
+                return true;
+            }));
+
+        $request = $this->createRequest();
 
         $router = $this->getRouter();
         $router->addRoute($route);
 
-        $result = $router->match($request->reveal());
+        $result = $router->match($request);
 
-        $this->assertInstanceOf(RouteResult::class, $result);
-        $this->assertTrue($result->isSuccess());
-        $this->assertSame($route, $result->getMatchedRoute());
+        self::assertInstanceOf(RouteResult::class, $result);
+        self::assertTrue($result->isSuccess());
+        self::assertSame($route, $result->getMatchedRoute());
     }
 
     /**
@@ -522,12 +524,12 @@ class LaminasRouterTest extends TestCase
         $router = new LaminasRouter();
         $router->addRoute($route);
 
-        $request = $this->createRequestProphecy($method);
-        $result  = $router->match($request->reveal());
+        $request = $this->createRequest($method);
+        $result  = $router->match($request);
 
-        $this->assertInstanceOf(RouteResult::class, $result);
-        $this->assertFalse($result->isSuccess());
-        $this->assertSame([RequestMethod::METHOD_PUT], $result->getAllowedMethods());
+        self::assertInstanceOf(RouteResult::class, $result);
+        self::assertFalse($result->isSuccess());
+        self::assertSame([RequestMethod::METHOD_PUT], $result->getAllowedMethods());
     }
 
     public function testUriGenerationMayUseOptions(): void
@@ -537,16 +539,19 @@ class LaminasRouterTest extends TestCase
         $router = new LaminasRouter();
         $router->addRoute($route);
 
-        $translator = $this->prophesize(TranslatorInterface::class);
-        $translator->translate('lang', 'uri', 'de')->willReturn('found');
+        $translator = $this->createMock(TranslatorInterface::class);
+        $translator->expects(self::once())
+            ->method('translate')
+            ->with('lang', 'uri', 'de')
+            ->willReturn('found');
 
         $uri = $router->generateUri('test', [], [
-            'translator'  => $translator->reveal(),
+            'translator'  => $translator,
             'locale'      => 'de',
             'text_domain' => 'uri',
         ]);
 
-        $this->assertEquals('/de/found', $uri);
+        self::assertEquals('/de/found', $uri);
     }
 
     public function testGenerateUriRaisesExceptionForNotFoundRoute(): void
@@ -572,6 +577,6 @@ class LaminasRouterTest extends TestCase
 
         $result = $router->match($serverRequest);
 
-        $this->assertTrue($result->isFailure());
+        self::assertTrue($result->isFailure());
     }
 }
