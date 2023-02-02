@@ -1,19 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="4.28.0@52e96bea381e6cb07a672aefec791a5817694a26">
+<files psalm-version="5.4.0@62db5d4f6a7ae0a20f7cc5a4952d730272fc0863">
   <file src="src/LaminasRouter.php">
-    <MixedArgument occurrences="2">
-      <code>$this-&gt;allowedMethodsByPath[$params[self::METHOD_NOT_ALLOWED_ROUTE]]</code>
-      <code>$this-&gt;allowedMethodsByPath[$path]</code>
-    </MixedArgument>
     <MixedArrayAccess occurrences="1">
       <code>$options['defaults']['middleware']</code>
     </MixedArrayAccess>
     <MixedArrayOffset occurrences="1">
       <code>$this-&gt;allowedMethodsByPath[$params[self::METHOD_NOT_ALLOWED_ROUTE]]</code>
     </MixedArrayOffset>
-    <MixedAssignment occurrences="1">
-      <code>$name</code>
-    </MixedAssignment>
     <MixedInferredReturnType occurrences="1">
       <code>string</code>
     </MixedInferredReturnType>
@@ -52,11 +45,6 @@
       <code>Closure::bind($fn, $router, LaminasRouter::class)()</code>
       <code>Closure::bind(fn() =&gt; $this-&gt;laminasRouter, $router, LaminasRouter::class)()</code>
     </PossiblyInvalidFunctionCall>
-    <PossiblyNullReference occurrences="3">
-      <code>getMiddleware</code>
-      <code>getMiddleware</code>
-      <code>getMiddleware</code>
-    </PossiblyNullReference>
     <UndefinedThisPropertyFetch occurrences="1">
       <code>$this-&gt;routesToInject</code>
     </UndefinedThisPropertyFetch>
