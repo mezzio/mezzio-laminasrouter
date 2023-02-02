@@ -1,51 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.4.0@62db5d4f6a7ae0a20f7cc5a4952d730272fc0863">
+<files psalm-version="5.6.0@e784128902dfe01d489c4123d69918a9f3c1eac5">
   <file src="src/LaminasRouter.php">
-    <MixedArrayAccess occurrences="1">
+    <MixedArgumentTypeCoercion>
+      <code>$params</code>
+    </MixedArgumentTypeCoercion>
+    <MixedArrayAccess>
       <code>$options['defaults']['middleware']</code>
     </MixedArrayAccess>
-    <MixedArrayOffset occurrences="1">
+    <MixedArrayOffset>
       <code>$this-&gt;allowedMethodsByPath[$params[self::METHOD_NOT_ALLOWED_ROUTE]]</code>
     </MixedArrayOffset>
-    <MixedInferredReturnType occurrences="1">
+    <MixedInferredReturnType>
       <code>string</code>
     </MixedInferredReturnType>
-    <MixedReturnStatement occurrences="1">
+    <MixedReturnStatement>
       <code>$this-&gt;laminasRouter-&gt;assemble($substitutions, $options)</code>
     </MixedReturnStatement>
-    <PossiblyNullArgument occurrences="2">
+    <PossiblyNullArgument>
       <code>$allowedMethods</code>
       <code>$route-&gt;getAllowedMethods()</code>
     </PossiblyNullArgument>
   </file>
   <file src="test/LaminasRouter/ConfigProviderTest.php">
-    <RedundantCondition occurrences="1">
+    <RedundantCondition>
       <code>assertIsArray</code>
     </RedundantCondition>
   </file>
   <file src="test/LaminasRouterTest.php">
-    <MixedArgument occurrences="1">
+    <MixedArgument>
       <code>$routesToInject</code>
     </MixedArgument>
-    <MixedAssignment occurrences="1">
+    <MixedAssignment>
       <code>$routesToInject</code>
     </MixedAssignment>
-    <MixedInferredReturnType occurrences="1">
+    <MixedInferredReturnType>
       <code>array</code>
     </MixedInferredReturnType>
-    <MixedReturnStatement occurrences="1">
+    <MixedReturnStatement>
       <code>$this-&gt;routesToInject</code>
     </MixedReturnStatement>
-    <PossiblyFalseReference occurrences="3">
+    <PossiblyFalseReference>
       <code>getMiddleware</code>
       <code>getMiddleware</code>
       <code>getMiddleware</code>
     </PossiblyFalseReference>
-    <PossiblyInvalidFunctionCall occurrences="2">
+    <PossiblyInvalidFunctionCall>
       <code>Closure::bind($fn, $router, LaminasRouter::class)()</code>
       <code>Closure::bind(fn() =&gt; $this-&gt;laminasRouter, $router, LaminasRouter::class)()</code>
     </PossiblyInvalidFunctionCall>
-    <UndefinedThisPropertyFetch occurrences="1">
+    <UndefinedThisPropertyFetch>
       <code>$this-&gt;routesToInject</code>
     </UndefinedThisPropertyFetch>
   </file>
