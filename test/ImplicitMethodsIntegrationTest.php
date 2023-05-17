@@ -16,7 +16,7 @@ class ImplicitMethodsIntegrationTest extends RouterIntegrationTest
         return new LaminasRouter();
     }
 
-    public function implicitRoutesAndRequests(): Generator
+    public static function implicitRoutesAndRequests(): Generator
     {
         $options = [
             'constraints' => [

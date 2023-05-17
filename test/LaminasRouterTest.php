@@ -18,6 +18,8 @@ use Mezzio\Router\Exception\RuntimeException;
 use Mezzio\Router\LaminasRouter;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
@@ -69,9 +71,7 @@ class LaminasRouterTest extends TestCase
         self::assertContains($route, $routesToInject);
     }
 
-    /**
-     * @depends testAddingRouteAggregatesInRouter
-     */
+    #[Depends('testAddingRouteAggregatesInRouter')]
     public function testMatchingInjectsRoutesInRouter(): void
     {
         $middleware = $this->getMiddleware();
@@ -120,9 +120,7 @@ class LaminasRouterTest extends TestCase
         $router->match($request);
     }
 
-    /**
-     * @depends testAddingRouteAggregatesInRouter
-     */
+    #[Depends('testAddingRouteAggregatesInRouter')]
     public function testGeneratingUriInjectsRoutesInRouter(): void
     {
         $middleware = $this->getMiddleware();
@@ -313,9 +311,6 @@ class LaminasRouterTest extends TestCase
         self::assertSame($middleware, $result->getMatchedRoute()->getMiddleware());
     }
 
-    /**
-     * @group match
-     */
     public function testSuccessfulMatchIsPossible(): void
     {
         $routeMatch = $this->createMock(RouteMatch::class);
@@ -353,9 +348,6 @@ class LaminasRouterTest extends TestCase
         self::assertSame($middleware, $result->getMatchedRoute()->getMiddleware());
     }
 
-    /**
-     * @group match
-     */
     public function testNonSuccessfulMatchNotDueToHttpMethodsIsPossible(): void
     {
         $this->laminasRouter->expects(self::once())
@@ -372,9 +364,6 @@ class LaminasRouterTest extends TestCase
         self::assertFalse($result->isMethodFailure());
     }
 
-    /**
-     * @group match
-     */
     public function testMatchFailureDueToHttpMethodReturnsRouteResultWithAllowedMethods(): void
     {
         $router = new LaminasRouter();
@@ -397,9 +386,6 @@ class LaminasRouterTest extends TestCase
         self::assertEquals([RequestMethod::METHOD_POST, RequestMethod::METHOD_DELETE], $result->getAllowedMethods());
     }
 
-    /**
-     * @group match
-     */
     public function testMatchFailureDueToMethodNotAllowedWithParamsInTheRoute(): void
     {
         $router = new LaminasRouter();
@@ -422,9 +408,6 @@ class LaminasRouterTest extends TestCase
         self::assertEquals([RequestMethod::METHOD_POST, RequestMethod::METHOD_DELETE], $result->getAllowedMethods());
     }
 
-    /**
-     * @group 53
-     */
     public function testCanGenerateUriFromRoutes(): void
     {
         $router = new LaminasRouter();
@@ -444,9 +427,6 @@ class LaminasRouterTest extends TestCase
         self::assertEquals('/bar/BAZ', $router->generateUri('bar', ['baz' => 'BAZ']));
     }
 
-    /**
-     * @group 3
-     */
     public function testPassingTrailingSlashToRouteNotExpectingItResultsIn404FailureRouteResult(): void
     {
         $router = new LaminasRouter();
@@ -506,7 +486,7 @@ class LaminasRouterTest extends TestCase
     /**
      * @return array<string, array<int, string>>
      */
-    public function implicitMethods(): array
+    public static function implicitMethods(): array
     {
         return [
             'head'    => [RequestMethod::METHOD_HEAD],
@@ -514,9 +494,7 @@ class LaminasRouterTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider implicitMethods
-     */
+    #[DataProvider('implicitMethods')]
     public function testRoutesCanMatchImplicitHeadAndOptionsRequests(string $method): void
     {
         $route = new Route('/foo', $this->getMiddleware(), [RequestMethod::METHOD_PUT]);
