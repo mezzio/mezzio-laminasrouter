@@ -4,16 +4,25 @@
     xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
     bootstrap="./vendor/autoload.php"
     colors="true"
-    convertDeprecationsToExceptions="true" >
-    <coverage processUncoveredFiles="true">
-        <include>
-            <directory suffix=".php">src</directory>
-        </include>
-    </coverage>
-
+    cacheDirectory=".phpunit.cache"
+    displayDetailsOnTestsThatTriggerWarnings="true"
+    displayDetailsOnTestsThatTriggerNotices="true"
+    displayDetailsOnTestsThatTriggerErrors="true"
+    displayDetailsOnTestsThatTriggerDeprecations="true"
+    displayDetailsOnSkippedTests="true"
+    displayDetailsOnIncompleteTests="true"
+    failOnNotice="true"
+    failOnWarning="true"
+    failOnDeprecation="true"
+>
     <testsuites>
         <testsuite name="Mezzio laminas-mvc Router Tests">
             <directory>./test</directory>
         </testsuite>
     </testsuites>
+    <source>
+        <include>
+            <directory suffix=".php">src</directory>
+        </include>
+    </source>
 </phpunit>
