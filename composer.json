@@ -38,7 +38,7 @@
         "fig/http-message-util": "^1.1.5",
         "laminas/laminas-psr7bridge": "^1.0.0",
         "laminas/laminas-router": "^3.10.0",
-        "mezzio/mezzio-router": "^3.14",
+        "mezzio/mezzio-router": "^3.14 || 4.0.x-dev",
         "psr/http-message": "^1.0.1 || ^2.0.0"
     },
     "require-dev": {
