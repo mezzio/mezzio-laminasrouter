@@ -42,7 +42,7 @@
         "psr/http-message": "^1.0.1 || ^2.0.0"
     },
     "require-dev": {
-        "laminas/laminas-coding-standard": "~2.5.0",
+        "laminas/laminas-coding-standard": "~3.0.0",
         "laminas/laminas-diactoros": "^2.25.2 || ^3.4.0",
         "laminas/laminas-i18n": "^2.29.0",
         "laminas/laminas-stratigility": "^4.0.2",
