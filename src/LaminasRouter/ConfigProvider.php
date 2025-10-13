@@ -7,6 +7,7 @@ namespace Mezzio\Router\LaminasRouter;
 use Mezzio\Router\LaminasRouter;
 use Mezzio\Router\RouterInterface;
 
+/** @final */
 class ConfigProvider
 {
     public function __invoke(): array

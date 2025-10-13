@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.11.0@c9b192ab8400fdaf04b2b13d110575adc879aa90">
+<files psalm-version="6.13.1@1e3b7f0a8ab32b23197b91107adc0a7ed8a05b51">
   <file src="src/LaminasRouter.php">
     <MixedArgumentTypeCoercion>
-      <code>$params</code>
+      <code><![CDATA[$params]]></code>
     </MixedArgumentTypeCoercion>
     <MixedArrayAccess>
       <code><![CDATA[$options['defaults']['middleware']]]></code>
@@ -10,47 +10,41 @@
     <MixedArrayOffset>
       <code><![CDATA[$this->allowedMethodsByPath[$params[self::METHOD_NOT_ALLOWED_ROUTE]]]]></code>
     </MixedArrayOffset>
-    <MixedInferredReturnType>
-      <code>string</code>
-    </MixedInferredReturnType>
     <MixedReturnStatement>
       <code><![CDATA[$this->laminasRouter->assemble($substitutions, $options)]]></code>
     </MixedReturnStatement>
     <PossiblyNullArgument>
-      <code>$allowedMethods</code>
+      <code><![CDATA[$allowedMethods]]></code>
       <code><![CDATA[$route->getAllowedMethods()]]></code>
     </PossiblyNullArgument>
   </file>
   <file src="test/LaminasRouter/ConfigProviderTest.php">
     <RedundantCondition>
-      <code>assertIsArray</code>
+      <code><![CDATA[assertIsArray]]></code>
     </RedundantCondition>
   </file>
   <file src="test/LaminasRouterTest.php">
+    <DeprecatedInterface>
+      <code><![CDATA[$this->createMock(TranslatorInterface::class)]]></code>
+    </DeprecatedInterface>
     <MixedArgument>
-      <code>$routesToInject</code>
+      <code><![CDATA[$routesToInject]]></code>
     </MixedArgument>
     <MixedAssignment>
-      <code>$routesToInject</code>
+      <code><![CDATA[$routesToInject]]></code>
     </MixedAssignment>
-    <MixedInferredReturnType>
-      <code>array</code>
-    </MixedInferredReturnType>
     <MixedReturnStatement>
       <code><![CDATA[$this->routesToInject]]></code>
     </MixedReturnStatement>
     <PossiblyFalseReference>
-      <code>getMiddleware</code>
-      <code>getMiddleware</code>
-      <code>getMiddleware</code>
+      <code><![CDATA[getMiddleware]]></code>
+      <code><![CDATA[getMiddleware]]></code>
+      <code><![CDATA[getMiddleware]]></code>
     </PossiblyFalseReference>
     <PossiblyNullFunctionCall>
-      <code>Closure::bind($fn, $router, LaminasRouter::class)()</code>
+      <code><![CDATA[Closure::bind($fn, $router, LaminasRouter::class)()]]></code>
       <code><![CDATA[Closure::bind(fn() => $this->laminasRouter, $router, LaminasRouter::class)()]]></code>
     </PossiblyNullFunctionCall>
-    <PossiblyUnusedMethod>
-      <code>implicitMethods</code>
-    </PossiblyUnusedMethod>
     <UndefinedThisPropertyFetch>
       <code><![CDATA[$this->routesToInject]]></code>
     </UndefinedThisPropertyFetch>

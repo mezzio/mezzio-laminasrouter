@@ -25,7 +25,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 
-class LaminasRouterTest extends TestCase
+final class LaminasRouterTest extends TestCase
 {
     /** @var TreeRouteStack&MockObject */
     private TreeRouteStack $laminasRouter;

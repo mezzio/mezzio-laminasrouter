@@ -9,7 +9,7 @@ use Mezzio\Router\LaminasRouter;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Router\Test\AbstractImplicitMethodsIntegrationTest as RouterIntegrationTest;
 
-class ImplicitMethodsIntegrationTest extends RouterIntegrationTest
+final class ImplicitMethodsIntegrationTest extends RouterIntegrationTest
 {
     public function getRouter(): RouterInterface
     {
