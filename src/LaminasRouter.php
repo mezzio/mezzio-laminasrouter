@@ -30,6 +30,8 @@ use function sprintf;
  * route, at a priority lower than method-specific routes. If the request
  * matches with this special route, we can send the HTTP allowed methods stored
  * for that path.
+ *
+ * @final
  */
 class LaminasRouter implements RouterInterface
 {
