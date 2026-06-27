@@ -22,10 +22,6 @@ final readonly class ConfigProvider
         return [
             'aliases'   => [
                 RouterInterface::class => LaminasRouter::class,
-
-                // Legacy Zend Framework aliases
-                'Zend\Expressive\Router\RouterInterface' => RouterInterface::class,
-                'Zend\Expressive\Router\ZendRouter'      => LaminasRouter::class,
             ],
             'factories' => [
                 LaminasRouter::class => LaminasRouterFactory::class,
