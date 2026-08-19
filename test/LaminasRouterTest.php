@@ -12,7 +12,7 @@ use Laminas\Diactoros\Uri;
 use Laminas\Router\AssembledUrl;
 use Laminas\Router\Http\HttpRouteMatch;
 use Laminas\Router\Http\TreeRouteStack;
-use Laminas\Router\RouteMatch;
+use Laminas\Router\RouteMatchInterface;
 use Laminas\Router\RoutePluginManager;
 use Laminas\Translator\TranslatorInterface;
 use Mezzio\Router\Exception\RuntimeException;
@@ -286,8 +286,7 @@ final class LaminasRouterTest extends TestCase
     {
         $request = $this->createRequest();
 
-        $routeMatch = new HttpRouteMatch([], 4);
-        $routeMatch->setMatchedRouteName('/foo');
+        $routeMatch = new HttpRouteMatch([], '/foo', 4);
 
         $this->laminasRouter->expects(self::once())
             ->method('match')
@@ -328,7 +327,7 @@ final class LaminasRouterTest extends TestCase
     public function testSuccessfulMatchIsPossible(): void
     {
         $request    = $this->createRequest();
-        $routeMatch = $this->createMock(RouteMatch::class);
+        $routeMatch = $this->createMock(RouteMatchInterface::class);
         $routeMatch->expects(self::once())
             ->method('getMatchedRouteName')
             ->willReturn('/foo');
@@ -470,7 +469,7 @@ final class LaminasRouterTest extends TestCase
     {
         $route = new Route('/foo', $this->getMiddleware(), [RequestMethod::METHOD_GET]);
 
-        $routeMatch = $this->createMock(RouteMatch::class);
+        $routeMatch = $this->createMock(RouteMatchInterface::class);
         $routeMatch->expects(self::once())
             ->method('getMatchedRouteName')
             ->willReturn($route->getName());

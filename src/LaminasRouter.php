@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Mezzio\Router;
 
 use Laminas\Router\Http\TreeRouteStack;
-use Laminas\Router\RouteMatch;
+use Laminas\Router\RouteMatchInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
 use function array_key_exists;
@@ -114,7 +114,7 @@ final class LaminasRouter implements RouterInterface
     /**
      * Create a successful RouteResult from the given RouteMatch.
      */
-    private function marshalSuccessResultFromRouteMatch(RouteMatch $match): RouteResult
+    private function marshalSuccessResultFromRouteMatch(RouteMatchInterface $match): RouteResult
     {
         $params = $match->getParams();
 
@@ -124,7 +124,7 @@ final class LaminasRouter implements RouterInterface
             );
         }
 
-        $routeName = $this->getMatchedRouteName((string) $match->getMatchedRouteName());
+        $routeName = $this->getMatchedRouteName($match->getMatchedRouteName());
 
         $route = array_reduce($this->routes, static function (?Route $matched, Route $route) use ($routeName): ?Route {
             if ($matched instanceof Route) {
