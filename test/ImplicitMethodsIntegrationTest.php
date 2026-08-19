@@ -5,15 +5,20 @@ declare(strict_types=1);
 namespace MezzioTest\Router;
 
 use Generator;
+use Laminas\Router\Http\TreeRouteStack;
+use Laminas\Router\RoutePluginManager;
 use Mezzio\Router\LaminasRouter;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Router\Test\AbstractImplicitMethodsIntegrationTest as RouterIntegrationTest;
+use Psr\Container\ContainerInterface;
 
 final class ImplicitMethodsIntegrationTest extends RouterIntegrationTest
 {
     public function getRouter(): RouterInterface
     {
-        return new LaminasRouter();
+        return new LaminasRouter(
+            new TreeRouteStack(new RoutePluginManager($this->createMock(ContainerInterface::class)))
+        );
     }
 
     public static function implicitRoutesAndRequests(): Generator

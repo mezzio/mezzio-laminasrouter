@@ -6,39 +6,23 @@ namespace MezzioTest\Router\LaminasRouter;
 
 use Mezzio\Router\LaminasRouter;
 use Mezzio\Router\LaminasRouter\ConfigProvider;
+use Mezzio\Router\LaminasRouterFactory;
 use Mezzio\Router\RouterInterface;
-use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\TestCase;
 
 final class ConfigProviderTest extends TestCase
 {
-    private ConfigProvider $provider;
-
-    protected function setUp(): void
+    public function testReturnedArrayContainsDependencies(): void
     {
-        $this->provider = new ConfigProvider();
-    }
-
-    public function testInvocationReturnsArray(): array
-    {
-        $config = ($this->provider)();
-        $this->assertIsArray($config);
-
-        return $config;
-    }
-
-    #[Depends('testInvocationReturnsArray')]
-    public function testReturnedArrayContainsDependencies(array $config): void
-    {
-        $this->assertArrayHasKey('dependencies', $config);
-        $this->assertIsArray($config['dependencies']);
-
-        $this->assertArrayHasKey('aliases', $config['dependencies']);
-        $this->assertIsArray($config['dependencies']['aliases']);
-        $this->assertArrayHasKey(RouterInterface::class, $config['dependencies']['aliases']);
-
-        $this->assertArrayHasKey('invokables', $config['dependencies']);
-        $this->assertIsArray($config['dependencies']['invokables']);
-        $this->assertArrayHasKey(LaminasRouter::class, $config['dependencies']['invokables']);
+        $this->assertSame([
+            'dependencies' => [
+                'aliases'   => [
+                    RouterInterface::class => LaminasRouter::class,
+                ],
+                'factories' => [
+                    LaminasRouter::class => LaminasRouterFactory::class,
+                ],
+            ],
+        ], (new ConfigProvider())->__invoke());
     }
 }
