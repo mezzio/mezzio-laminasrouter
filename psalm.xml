@@ -9,6 +9,7 @@
     findUnusedBaselineEntry="true"
     findUnusedCode="true"
     findUnusedPsalmSuppress="true"
+    ensureOverrideAttribute="false"
 >
     <projectFiles>
         <directory name="src" />
@@ -19,12 +20,6 @@
     </projectFiles>
 
     <issueHandlers>
-        <MissingOverrideAttribute>
-            <errorLevel type="suppress">
-                <directory name="src" />
-                <directory name="test" />
-            </errorLevel>
-        </MissingOverrideAttribute>
     </issueHandlers>
 
     <plugins>
