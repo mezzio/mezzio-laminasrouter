@@ -9,13 +9,12 @@ use Fig\Http\Message\RequestMethodInterface as RequestMethod;
 use Laminas\Diactoros\ServerRequest;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\Diactoros\Uri;
-use Laminas\Http\Request as LaminasRequest;
 use Laminas\I18n\Translator\TranslatorInterface;
-use Laminas\Psr7Bridge\Psr7ServerRequest;
 use Laminas\Router\Http\TreeRouteStack;
 use Laminas\Router\RouteMatch;
 use Mezzio\Router\Exception\RuntimeException;
 use Mezzio\Router\LaminasRouter;
+use Mezzio\Router\LaminasRouter\RouterRequest;
 use Mezzio\Router\Route;
 use Mezzio\Router\RouteResult;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -114,7 +113,7 @@ final class LaminasRouterTest extends TestCase
         $request = $this->createRequest();
         $this->laminasRouter->expects(self::once())
             ->method('match')
-            ->with(self::isInstanceOf(LaminasRequest::class))
+            ->with(self::isInstanceOf(RouterRequest::class))
             ->willReturn(null);
 
         $router->match($request);
@@ -273,7 +272,7 @@ final class LaminasRouterTest extends TestCase
     public function testReturnsRouteFailureForRouteInjectedManuallyIntoBaseRouterButNotRouterBridge(): void
     {
         $request        = $this->createRequest();
-        $laminasRequest = Psr7ServerRequest::toLaminas($request);
+        $laminasRequest = new RouterRequest($request);
 
         $routeMatch = new \Laminas\Router\Http\RouteMatch([], 4);
         $routeMatch->setMatchedRouteName('/foo');
@@ -325,7 +324,7 @@ final class LaminasRouterTest extends TestCase
 
         $this->laminasRouter->expects(self::once())
             ->method('match')
-            ->with(self::isInstanceOf(LaminasRequest::class))
+            ->with(self::isInstanceOf(RouterRequest::class))
             ->willReturn($routeMatch);
 
         $this->laminasRouter->expects(self::once())
@@ -352,7 +351,7 @@ final class LaminasRouterTest extends TestCase
     {
         $this->laminasRouter->expects(self::once())
             ->method('match')
-            ->with(self::isInstanceOf(LaminasRequest::class))
+            ->with(self::isInstanceOf(RouterRequest::class))
             ->willReturn(null);
 
         $request = $this->createRequest();
@@ -461,7 +460,7 @@ final class LaminasRouterTest extends TestCase
 
         $this->laminasRouter->expects(self::once())
             ->method('match')
-            ->with(self::isInstanceOf(LaminasRequest::class))
+            ->with(self::isInstanceOf(RouterRequest::class))
             ->willReturn($routeMatch);
         $this->laminasRouter->expects(self::once())
             ->method('addRoute')

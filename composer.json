@@ -36,8 +36,9 @@
     "require": {
         "php": "~8.3.0 || ~8.4.0 || ~8.5.0 || ~8.6.0",
         "fig/http-message-util": "^1.1.5",
-        "laminas/laminas-psr7bridge": "^1.0.0",
         "laminas/laminas-router": "^3.10.0",
+        "laminas/laminas-stdlib": "^3.10.1",
+        "laminas/laminas-uri": "^2.14",
         "mezzio/mezzio-router": "^3.14 || ^4.0",
         "psr/http-message": "^1.0.1 || ^2.0.0"
     },
